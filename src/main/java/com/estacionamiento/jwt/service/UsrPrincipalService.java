@@ -6,4 +6,6 @@ public interface UsrPrincipalService {
 
 	UsrPrincipal SavePrincipal(UsrPrincipal usrPrincipal);
 
+	String GeneradorTokens(String token);
+
 }

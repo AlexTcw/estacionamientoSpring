@@ -1,5 +1,6 @@
 package com.estacionamiento.jwt.model;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import jakarta.persistence.Entity;
@@ -16,24 +17,34 @@ public class UsrPrincipal {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long idPrincipal;
 
-	@Temporal(TemporalType.DATE)
-	private Date ingreso;
-	@Temporal(TemporalType.DATE)
-	private Date salida;
+	private LocalDateTime ingreso;
+	private LocalDateTime salida;
 	private String tokenIngreso;
 	private Double total;
+	private String idPublica;
 
 	public UsrPrincipal() {
 		super();
 	}
 
-	public UsrPrincipal(Long idPrincipal, Date ingreso, Date salida, String tokenIngreso, Double total) {
+	public UsrPrincipal(Long idPrincipal, LocalDateTime ingreso, LocalDateTime salida, String tokenIngreso,
+			Double total, String idPublica) {
 		super();
 		this.idPrincipal = idPrincipal;
 		this.ingreso = ingreso;
 		this.salida = salida;
 		this.tokenIngreso = tokenIngreso;
 		this.total = total;
+		this.idPublica = idPublica;
+	}
+	
+
+	public LocalDateTime getSalida() {
+		return salida;
+	}
+
+	public void setSalida(LocalDateTime salida) {
+		this.salida = salida;
 	}
 
 	public Long getIdPrincipal() {
@@ -44,20 +55,12 @@ public class UsrPrincipal {
 		this.idPrincipal = idPrincipal;
 	}
 
-	public Date getIngreso() {
+	public LocalDateTime getIngreso() {
 		return ingreso;
 	}
 
-	public void setIngreso(Date ingreso) {
+	public void setIngreso(LocalDateTime ingreso) {
 		this.ingreso = ingreso;
-	}
-
-	public Date getSalida() {
-		return salida;
-	}
-
-	public void setSalida(Date salida) {
-		this.salida = salida;
 	}
 
 	public String getTokenIngreso() {
@@ -74,6 +77,14 @@ public class UsrPrincipal {
 
 	public void setTotal(Double total) {
 		this.total = total;
+	}
+
+	public String getIdPublica() {
+		return idPublica;
+	}
+
+	public void setIdPublica(String idPublica) {
+		this.idPublica = idPublica;
 	}
 
 }

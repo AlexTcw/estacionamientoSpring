@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.estacionamiento.jwt.model.UsrPrincipal;
 import com.estacionamiento.jwt.service.UsrPrincipalService;
 
 @RestController
@@ -17,12 +16,9 @@ public class PrincipalController {
 	UsrPrincipalService usrPrincipalService;
 	
 	@GetMapping({"","/Ingreso"})
-	public UsrPrincipal nuevoIngreso(@RequestParam String tokenString) {
+	public String nuevoIngreso(@RequestParam(value ="token" , required = false )String token) {
 		
-		UsrPrincipal usrPrincipal = new UsrPrincipal();
-		usrPrincipalService.SavePrincipal(usrPrincipal);
-		
-		return usrPrincipal;
+		return usrPrincipalService.GeneradorTokens(token);
 	}
 	
 }

@@ -21,5 +21,10 @@ public class UsrPrincipalDaoImp implements UsrPrincipalDao{
 	public void deleteUPD(Long id) {
 		 repository.deleteById(id);
 	}
+	
+	@Override
+	public Long maxId(){
+		return repository.findMaxIdPrincipal();
+	}
 		
 }

@@ -8,4 +8,6 @@ public interface UsrPrincipalDao {
 
 	void deleteUPD(Long id);
 
+	Long maxId();
+
 }
