@@ -26,5 +26,15 @@ public class UsrPrincipalDaoImp implements UsrPrincipalDao{
 	public Long maxId(){
 		return repository.findMaxIdPrincipal();
 	}
+
+	@Override
+	public UsrPrincipal recuperarUsrPrincipalById(long id) {
+		return repository.findByidPrincipal(id);
+	}
+
+	@Override
+	public UsrPrincipal recuperarUsrPrincipalByToken(String token) {
+		return repository.findByTokenIngreso(token);
+	}
 		
 }

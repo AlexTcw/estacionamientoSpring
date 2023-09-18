@@ -10,4 +10,8 @@ public interface UsrPrincipalDao {
 
 	Long maxId();
 
+	UsrPrincipal recuperarUsrPrincipalById(long id);
+
+	UsrPrincipal recuperarUsrPrincipalByToken(String token);
+
 }
