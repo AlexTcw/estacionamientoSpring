@@ -6,11 +6,13 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.estacionamiento.jwt.dao.Historial.HistorialDao;
 import com.estacionamiento.jwt.dao.UsrPrincipalDao.UsrPrincipalDao;
 import com.estacionamiento.jwt.model.UsrPrincipal;
 import com.estacionamiento.jwt.model.Dto.IngresoDTO;
 import com.estacionamiento.jwt.model.Dto.ReciboDTO;
 import com.estacionamiento.jwt.model.Const;
+import com.estacionamiento.jwt.model.Historial;
 
 import java.time.Duration;
 
@@ -20,44 +22,60 @@ public class UsrPrincipalServiceImp implements UsrPrincipalService {
 	@Autowired
 	UsrPrincipalDao usrPrincipalDao;
 
+	@Autowired
+	HistorialDao hstDao;
+
 	@Override
 	public UsrPrincipal SavePrincipal(UsrPrincipal usrPrincipal) {
 		return usrPrincipalDao.saveorUpdateUPD(usrPrincipal);
 	}
 
 	@Override
-	public ReciboDTO ControlSalida(String token){
+	public ReciboDTO ControlSalida(String token) {
 		ReciboDTO recibo = new ReciboDTO();
 
 		UsrPrincipal usr = usrPrincipalDao.recuperarUsrPrincipalByToken(token);
 
-			Const costo = new Const();
+		Const costo = new Const();
 
-			/* Establecer entrada y salida del usuario */
-			LocalDateTime ingreso = usr.getIngreso();
-			LocalDateTime salida = LocalDateTime.now();
-			usr.setSalida(salida);
-			/* calcular duracion en el estacionamiento */
-			Duration duracion = Duration.between(ingreso, salida);
-			long horas = duracion.toHours();
-			Long minutos = duracion.toMinutes();
+		/* Establecer entrada y salida del usuario */
+		LocalDateTime ingreso = usr.getIngreso();
+		LocalDateTime salida = LocalDateTime.now();
+		usr.setSalida(salida);
+		/* calcular duracion en el estacionamiento */
+		Duration duracion = Duration.between(ingreso, salida);
+		Long horas = duracion.toHours();
+		Long minutos = duracion.toMinutes();
 
-			double totalHoras = horas * costo.costoPorHora;
-			if (totalHoras == 0){
-				totalHoras = minutos*costo.costoPorMinuto;
-			}
+		double totalHoras = horas * costo.costoPorHora;
+		if (totalHoras == 0) {
+			totalHoras = minutos * costo.costoPorMinuto;
+		}
 
-			usr.setTotal(totalHoras);
+		usr.setTotal(totalHoras);
 
-			usrPrincipalDao.saveorUpdateUPD(usr);
+		usrPrincipalDao.saveorUpdateUPD(usr);
 
-			recibo.setIdPublica(usr.getIdPublica());
-			recibo.setTotalHoras(horas);
-			recibo.setTotalMinutos(minutos);
-			recibo.setMensaje("Gracias por su visita");
-			recibo.setTotalCosto(usr.getTotal());
+		recibo.setIdPublica(usr.getIdPublica());
+		recibo.setTotalHoras(horas);
+		recibo.setTotalMinutos(minutos);
+		recibo.setMensaje("Gracias por su visita");
+		Double total = usr.getTotal();
+		recibo.setTotalCosto(total);
 
+		/* Trasladar la informacion al Historial */
+		Historial createHistorial = new Historial();
 
+		createHistorial.setIdPublica(usr.getIdPublica());
+		createHistorial.setIngreso(ingreso);
+		createHistorial.setSalida(salida);
+		createHistorial.setTiempoDeUso(totalHoras);
+		createHistorial.setTotal(total);
+
+		hstDao.saveOrUpdateHistorial(createHistorial);
+
+		/* Borrar la informacion una vez se guardo el historial */
+		usrPrincipalDao.deleteUPD(usr.getIdPrincipal());
 
 		return recibo;
 
@@ -90,10 +108,10 @@ public class UsrPrincipalServiceImp implements UsrPrincipalService {
 
 		ingresoDTO.setIdPublica(idPublica);
 		ingresoDTO.setIngreso(ingreso);
-		ingresoDTO.setMensaje("Bienvenido al uso del estacionamiento"+id);
+		ingresoDTO.setMensaje("Bienvenido al uso del estacionamiento" + id);
 
 		return ingresoDTO;
-		
+
 	}
 
 }
