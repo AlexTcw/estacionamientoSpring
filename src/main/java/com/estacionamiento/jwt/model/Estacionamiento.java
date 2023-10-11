@@ -8,47 +8,37 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
-public class Historial {
+public class Estacionamiento {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long cveHist;
-
-	private Double tiempoDeUso;
-	private LocalDateTime ingresoFec;
-	private LocalDateTime salidaFec;
-	private Double total;
 	private Long cveEst;
 
-	public Historial() {
+	private LocalDateTime ingresoFec;
+	private LocalDateTime salidaFec;
+	private String tokenIngreso;
+	private Double total;
+
+	public Estacionamiento() {
 		super();
 	}
 
-	public Historial(Long cveHist, Double tiempoDeUso, LocalDateTime ingresoFec, LocalDateTime salidaFec, Double total,
-			Long cveEst) {
+	public Estacionamiento(Long cveEst, LocalDateTime ingresoFec, LocalDateTime salidaFec, String tokenIngreso,
+			Double total) {
 		super();
-		this.cveHist = cveHist;
-		this.tiempoDeUso = tiempoDeUso;
+		this.cveEst = cveEst;
 		this.ingresoFec = ingresoFec;
 		this.salidaFec = salidaFec;
+		this.tokenIngreso = tokenIngreso;
 		this.total = total;
+	}
+
+	public Long getCveEst() {
+		return cveEst;
+	}
+
+	public void setCveEst(Long cveEst) {
 		this.cveEst = cveEst;
-	}
-
-	public Long getCveHist() {
-		return cveHist;
-	}
-
-	public void setCveHist(Long cveHist) {
-		this.cveHist = cveHist;
-	}
-
-	public Double getTiempoDeUso() {
-		return tiempoDeUso;
-	}
-
-	public void setTiempoDeUso(Double tiempoDeUso) {
-		this.tiempoDeUso = tiempoDeUso;
 	}
 
 	public LocalDateTime getIngresoFec() {
@@ -67,20 +57,20 @@ public class Historial {
 		this.salidaFec = salidaFec;
 	}
 
+	public String getTokenIngreso() {
+		return tokenIngreso;
+	}
+
+	public void setTokenIngreso(String tokenIngreso) {
+		this.tokenIngreso = tokenIngreso;
+	}
+
 	public Double getTotal() {
 		return total;
 	}
 
 	public void setTotal(Double total) {
 		this.total = total;
-	}
-
-	public Long getCveEst() {
-		return cveEst;
-	}
-
-	public void setCveEst(Long cveEst) {
-		this.cveEst = cveEst;
 	}
 
 }

@@ -6,5 +6,5 @@ import com.estacionamiento.jwt.model.Historial;
 
 public interface HistorialRepository extends JpaRepository<Historial, Long>{
 	
-	public Historial findHistoryById(Long id);
+	 Historial findHistoryByCveHist(Long id);
 }

@@ -12,6 +12,8 @@ public class HistorialDaoImp implements HistorialDao {
 	@Autowired
 	HistorialRepository repository;
 	
+	/*CRUD*/
+	
 	@Override
 	public Historial saveOrUpdateHistorial(Historial hst) {
 		return repository.save(hst);
@@ -19,7 +21,8 @@ public class HistorialDaoImp implements HistorialDao {
 	
 	@Override
 	public Historial findHistorialById(Long id) {
-		return repository.findHistoryById(id);
+		return repository.findHistoryByCveHist(id);
 	}
+
 
 }
