@@ -18,19 +18,29 @@ public class Estacionamiento {
 	private LocalDateTime salidaFec;
 	private int tokenIngreso;
 	private Double total;
+	private Boolean edoPago = false;
 
 	public Estacionamiento() {
 		super();
 	}
 
 	public Estacionamiento(Long cveEst, LocalDateTime ingresoFec, LocalDateTime salidaFec, int tokenIngreso,
-			Double total) {
+			Double total, Boolean edoPago) {
 		super();
 		this.cveEst = cveEst;
 		this.ingresoFec = ingresoFec;
 		this.salidaFec = salidaFec;
 		this.tokenIngreso = tokenIngreso;
 		this.total = total;
+		this.edoPago = edoPago;
+	}
+
+	public Boolean getEdoPago() {
+		return edoPago;
+	}
+
+	public void setEdoPago(Boolean edoPago) {
+		this.edoPago = edoPago;
 	}
 
 	public Long getCveEst() {

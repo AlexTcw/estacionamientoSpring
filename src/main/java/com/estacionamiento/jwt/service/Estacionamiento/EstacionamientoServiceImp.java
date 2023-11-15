@@ -72,14 +72,19 @@ public class EstacionamientoServiceImp implements EstacionamientoService {
 		Duration duration = Duration.between(ingreso, salida);
 		long hrs = duration.toHours();
 		long mnts = duration.toMinutes();
+		long sec = duration.toSeconds();
 
 		double totalHoras;
+		double totalTiempo;
 
-		if (mnts % 60 == 0 || duration.getSeconds() > 0) {
+		if (sec >=0) {
 		    // Si los minutos son múltiplos de 60 o hay segundos, redondear hacia arriba
+			totalTiempo = Math.ceil((double) mnts / 60);
 		    totalHoras = Math.ceil((double) mnts / 60) * costoPH.costoPorHora;
+		    System.out.println(totalTiempo);
 		} else {
 		    // Si los minutos son exactos, simplemente usar las horas
+			totalTiempo = hrs;
 		    totalHoras = hrs * costoPH.costoPorHora;
 		}
 
@@ -98,7 +103,7 @@ public class EstacionamientoServiceImp implements EstacionamientoService {
 		Historial hst = new Historial();
 		hst.setIngresoFec(ingreso);
 		hst.setSalidaFec(salida);
-		hst.setTiempoDeUso(totalHoras);
+		hst.setTiempoDeUso(totalTiempo);
 		hst.setTotal(TotalEst);
 		hst.setCveEst(est.getCveEst());
 
