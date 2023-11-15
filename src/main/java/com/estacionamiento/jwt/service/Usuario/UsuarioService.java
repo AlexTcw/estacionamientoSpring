@@ -1,4 +1,4 @@
-package com.estacionamiento.jwt.service.usuario;
+package com.estacionamiento.jwt.service.Usuario;
 
 import org.springframework.stereotype.Service;
 
@@ -9,8 +9,8 @@ public interface UsuarioService {
 
 	Boolean findUsuarioByCorreoUsu(String corString);
 
-	Usuario recoverUsuario(String correo, String pswd, String token);
+	Usuario recoverUsuario(String correo, String pswd, int token);
 
-	Usuario createNewUsu(String correo, String pswd, String token);
+	Usuario createNewUsu(String correo, String pswd, int token);
 
 }

@@ -2,20 +2,19 @@ package com.estacionamiento.jwt.service.Estacionamiento;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.estacionamiento.jwt.dao.Estacionamiento.EstacionamientoDao;
-import com.estacionamiento.jwt.dao.Historial.HistorialDao;
-import com.estacionamiento.jwt.dao.usuario.UsuarioDao;
+import com.estacionamiento.jwt.Dao.Estacionamiento.EstacionamientoDao;
+import com.estacionamiento.jwt.Dao.Historial.HistorialDao;
+import com.estacionamiento.jwt.Dao.Usuario.UsuarioDao;
 import com.estacionamiento.jwt.model.Const;
 import com.estacionamiento.jwt.model.Estacionamiento;
 import com.estacionamiento.jwt.model.Historial;
 import com.estacionamiento.jwt.model.Usuario;
-import com.estacionamiento.jwt.model.Dto.IngresoDTO;
-import com.estacionamiento.jwt.model.Dto.ReciboDTO;
+import com.estacionamiento.jwt.model.DTO.IngresoDTO;
+import com.estacionamiento.jwt.model.DTO.ReciboDTO;
 
 @Service
 public class EstacionamientoServiceImp implements EstacionamientoService {
@@ -31,7 +30,7 @@ public class EstacionamientoServiceImp implements EstacionamientoService {
 
 	/* valida si ya existe o no el token */
 	@Override
-	public Boolean existToken(String token) {
+	public Boolean existToken(int token) {
 		Estacionamiento est = estDao.findEstacionamientoByTokenIngreso(token);
 		if (est != null) {
 			return true;
@@ -39,13 +38,28 @@ public class EstacionamientoServiceImp implements EstacionamientoService {
 			return false;
 		}
 	}
+	
+	@Override
+	public int generateNewToken() {
+        Long lastId = estDao.findLastId();
+        if (lastId != null) {
+            return lastId.intValue() + 1;
+        } else {
+            lastId = 1L;
+            return lastId.intValue();
+        }
+	}
 
 	/* se accionara si el usuario ya existia y fue detectado por la huella */
 	@Override
-	public ReciboDTO generarReciboSalidaEstacionamiento(String token) {
+	public ReciboDTO generarReciboSalidaEstacionamiento(int token) {
 
 		Const costoPH = new Const();
 		Usuario usr = usrDao.findUsuarioByToken(token); 
+		if (usr == null) {
+			System.out.println("aun no hay un usuario vinculado");
+			return null;
+		}
 		Estacionamiento est = estDao.findEstacionamientoByTokenIngreso(token);
 		
 
@@ -56,16 +70,21 @@ public class EstacionamientoServiceImp implements EstacionamientoService {
 
 		/* calcula el costo por uso */
 		Duration duration = Duration.between(ingreso, salida);
-		Long hrs = duration.toHours();
-		Long mnts = duration.toMinutes();
+		long hrs = duration.toHours();
+		long mnts = duration.toMinutes();
 
-		double totalHoras = hrs * costoPH.costoPorHora;
-		if (totalHoras == 0) {
-			totalHoras = mnts * costoPH.costoPorMinuto;
+		double totalHoras;
+
+		if (mnts % 60 == 0 || duration.getSeconds() > 0) {
+		    // Si los minutos son múltiplos de 60 o hay segundos, redondear hacia arriba
+		    totalHoras = Math.ceil((double) mnts / 60) * costoPH.costoPorHora;
+		} else {
+		    // Si los minutos son exactos, simplemente usar las horas
+		    totalHoras = hrs * costoPH.costoPorHora;
 		}
+
 		est.setTotal(totalHoras);
 		estDao.CreateOrUpdateEstacionamiento(est);
-
 		/* Generamos el recibo */
 		ReciboDTO recibo = new ReciboDTO();
 		Double TotalEst = est.getTotal();
@@ -93,13 +112,11 @@ public class EstacionamientoServiceImp implements EstacionamientoService {
 	}
 
 	@Override
-	public IngresoDTO controlEntrada(String token) {
+	public IngresoDTO controlEntrada(int token) {
 		LocalDateTime ingreso = LocalDateTime.now();
 		Const Const = new Const();
 		IngresoDTO recibo = new IngresoDTO();
 
-		/* Generar Token */
-		token = UUID.randomUUID().toString();
 		/* maxID */
 		Long maxCveEst = estDao.maxID();
 

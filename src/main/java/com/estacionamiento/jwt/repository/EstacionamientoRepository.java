@@ -7,10 +7,14 @@ import com.estacionamiento.jwt.model.Estacionamiento;
 
 public interface EstacionamientoRepository extends JpaRepository<Estacionamiento, Long> {
 
-	Estacionamiento findByTokenIngreso(String tokenIngreso);
+	@Query(value = "SELECT cve_est FROM estacionamiento ORDER BY cve_est DESC LIMIT 1", nativeQuery = true)
+    Long findLastId();
 
-	void deleteByTokenIngreso(String tokenIngreso);
+	Estacionamiento findByTokenIngreso(int tokenIngreso);
+
+	void deleteByTokenIngreso(int tokenIngreso);
 
 	@Query(value = "select max(e.cve_est) from estacionamiento e ", nativeQuery = true)
 	Long maxCveEst();
+	
 }

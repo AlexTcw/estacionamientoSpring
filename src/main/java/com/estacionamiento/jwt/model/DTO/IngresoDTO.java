@@ -1,4 +1,4 @@
-package com.estacionamiento.jwt.model.Dto;
+package com.estacionamiento.jwt.model.DTO;
 
 import java.time.LocalDateTime;
 

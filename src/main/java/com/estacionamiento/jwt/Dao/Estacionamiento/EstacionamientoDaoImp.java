@@ -1,4 +1,4 @@
-package com.estacionamiento.jwt.dao.Estacionamiento;
+package com.estacionamiento.jwt.Dao.Estacionamiento;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -22,18 +22,24 @@ public class EstacionamientoDaoImp implements EstacionamientoDao{
 	
 	@Override
 	@Transactional
-	public void deleteEstacionamientoByToken(String token) {
+	public void deleteEstacionamientoByToken(int token) {
 		estRepository.deleteByTokenIngreso(token);
 	}
 	
 	@Override
-	public Estacionamiento findEstacionamientoByTokenIngreso(String token) {
+	public Estacionamiento findEstacionamientoByTokenIngreso(int token) {
 		return estRepository.findByTokenIngreso(token);
 	}
 	
 	@Override
 	public Long maxID() {
 		return estRepository.maxCveEst();
+	}
+
+	@Override
+	public Long findLastId() {
+		// TODO Auto-generated method stub
+		return estRepository.findLastId();
 	}
 	
 }

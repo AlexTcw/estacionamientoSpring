@@ -1,4 +1,4 @@
-package com.estacionamiento.jwt.dao.usuario;
+package com.estacionamiento.jwt.Dao.Usuario;
 
 import com.estacionamiento.jwt.model.Usuario;
 
@@ -10,6 +10,6 @@ public interface UsuarioDao {
 
 	Usuario findUsuarioByCorreo(String correo);
 
-	Usuario findUsuarioByToken(String token);
+	Usuario findUsuarioByToken(int token);
 
 }

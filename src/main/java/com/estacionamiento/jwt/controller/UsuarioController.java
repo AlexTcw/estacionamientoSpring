@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.estacionamiento.jwt.model.Usuario;
-import com.estacionamiento.jwt.service.usuario.UsuarioService;
+import com.estacionamiento.jwt.service.Usuario.UsuarioService;
 
 @Controller
 @RestController
@@ -19,7 +19,7 @@ public class UsuarioController {
 	UsuarioService usuarioService;
 
 	@GetMapping("/recoverOrCreateUSU")
-	public ResponseEntity<?> recoverOrCreateUsuario(@RequestParam String correo, @RequestParam String pswd, @RequestParam(value = "token", required = false) String token) {
+	public ResponseEntity<?> recoverOrCreateUsuario(@RequestParam String correo, @RequestParam String pswd, @RequestParam(value = "token", required = false) int token) {
 		if (correo == null || pswd == null) {
 			return ResponseEntity.badRequest().body("Debes ingresar tu correo y contraseña.");
 		}

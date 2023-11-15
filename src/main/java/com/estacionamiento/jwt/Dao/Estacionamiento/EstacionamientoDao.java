@@ -1,16 +1,18 @@
-package com.estacionamiento.jwt.dao.Estacionamiento;
+package com.estacionamiento.jwt.Dao.Estacionamiento;
 
 import com.estacionamiento.jwt.model.Estacionamiento;
 
 public interface EstacionamientoDao {
 
 
-	void deleteEstacionamientoByToken(String token);
-
-	Estacionamiento findEstacionamientoByTokenIngreso(String token);
+	void deleteEstacionamientoByToken(int token);
 
 	Estacionamiento CreateOrUpdateEstacionamiento(Estacionamiento estacionamiento);
 
 	Long maxID();
+
+	Estacionamiento findEstacionamientoByTokenIngreso(int token);
+
+	Long findLastId();
 
 }

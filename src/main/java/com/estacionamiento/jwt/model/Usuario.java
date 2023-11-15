@@ -15,13 +15,13 @@ public class Usuario {
 	private String correo;
 	private String contraseña;
 
-	private String tokenEst;
+	private int tokenEst;
 
 	public Usuario() {
 		super();
 	}
 
-	public Usuario(Long cveUsu, String correo, String contraseña, String tokenEst) {
+	public Usuario(Long cveUsu, String correo, String contraseña, int tokenEst) {
 		super();
 		this.cveUsu = cveUsu;
 		this.correo = correo;
@@ -53,11 +53,11 @@ public class Usuario {
 		this.contraseña = contraseña;
 	}
 
-	public String getTokenEst() {
+	public int getTokenEst() {
 		return tokenEst;
 	}
 
-	public void setTokenEst(String tokenEst) {
+	public void setTokenEst(int tokenEst) {
 		this.tokenEst = tokenEst;
 	}
 

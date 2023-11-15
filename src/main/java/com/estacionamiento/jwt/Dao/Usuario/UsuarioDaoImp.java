@@ -1,4 +1,4 @@
-package com.estacionamiento.jwt.dao.usuario;
+package com.estacionamiento.jwt.Dao.Usuario;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -29,7 +29,7 @@ public class UsuarioDaoImp implements UsuarioDao {
 	}
 	
 	@Override
-	public Usuario findUsuarioByToken(String token) {
+	public Usuario findUsuarioByToken(int token) {
 		return usrRepository.findUsuarioByTokenEst(token);
 	}
 }

@@ -16,14 +16,14 @@ public class Estacionamiento {
 
 	private LocalDateTime ingresoFec;
 	private LocalDateTime salidaFec;
-	private String tokenIngreso;
+	private int tokenIngreso;
 	private Double total;
 
 	public Estacionamiento() {
 		super();
 	}
 
-	public Estacionamiento(Long cveEst, LocalDateTime ingresoFec, LocalDateTime salidaFec, String tokenIngreso,
+	public Estacionamiento(Long cveEst, LocalDateTime ingresoFec, LocalDateTime salidaFec, int tokenIngreso,
 			Double total) {
 		super();
 		this.cveEst = cveEst;
@@ -57,11 +57,11 @@ public class Estacionamiento {
 		this.salidaFec = salidaFec;
 	}
 
-	public String getTokenIngreso() {
+	public int getTokenIngreso() {
 		return tokenIngreso;
 	}
 
-	public void setTokenIngreso(String tokenIngreso) {
+	public void setTokenIngreso(int tokenIngreso) {
 		this.tokenIngreso = tokenIngreso;
 	}
 

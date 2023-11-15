@@ -1,28 +1,42 @@
 package com.estacionamiento.jwt.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.estacionamiento.jwt.model.DTO.IngresoDTO;
+import com.estacionamiento.jwt.model.DTO.ReciboDTO;
 import com.estacionamiento.jwt.service.Estacionamiento.EstacionamientoService;
 
-@Controller
 @RestController
 public class EstacionamientoController {
 
 	@Autowired
 	EstacionamientoService estacionamientoService;
+	
+	/*"http://192.168.1.77:8080/api/fingerprint/generateToken"*/
+	
+	@GetMapping("/generateToken")
+	public int generateTokenFromFP() {
+		return estacionamientoService.generateNewToken();
+	}
+	
+	@PostMapping("/saveOrDelete")
+	public ResponseEntity<Object> gestionarToken(@RequestParam("token") int token) {
+	    boolean tokenExistente = estacionamientoService.existToken(token);
 
-    @PostMapping("/ingreso")
-    public Object controlEntrada(@RequestParam(value = "token", required = false) String token) {
-        if (token == null) {
-            // Si no se proporciona un token, crea uno nuevo y devuelve un mensaje de bienvenida.
-            return estacionamientoService.controlEntrada(null);
-        } else {
-            // Si se proporciona un token existente, busca el estacionamiento y devuelve el recibo de salida.
-            return estacionamientoService.generarReciboSalidaEstacionamiento(token);
-        }
-    }
+	    if (tokenExistente) {
+	    	ReciboDTO reciboDTO = estacionamientoService.generarReciboSalidaEstacionamiento(token);
+	    	return ResponseEntity.ok(reciboDTO);
+	    } else {
+	        IngresoDTO ingresoDto = estacionamientoService.controlEntrada(token);
+	        if (ingresoDto == null) {
+				return (ResponseEntity<Object>) ResponseEntity.badRequest();
+			}
+	        return ResponseEntity.ok(ingresoDto);
+	    }
+	}
 }

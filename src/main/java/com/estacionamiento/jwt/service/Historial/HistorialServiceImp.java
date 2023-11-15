@@ -1,4 +1,4 @@
-package com.estacionamiento.jwt.service.historial;
+package com.estacionamiento.jwt.service.Historial;
 
 import org.springframework.stereotype.Service;
 

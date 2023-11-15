@@ -2,16 +2,18 @@ package com.estacionamiento.jwt.service.Estacionamiento;
 
 import org.springframework.stereotype.Service;
 
-import com.estacionamiento.jwt.model.Dto.IngresoDTO;
-import com.estacionamiento.jwt.model.Dto.ReciboDTO;
+import com.estacionamiento.jwt.model.DTO.IngresoDTO;
+import com.estacionamiento.jwt.model.DTO.ReciboDTO;
 
 @Service
 public interface EstacionamientoService {
 
-	Boolean existToken(String token);
+	int generateNewToken();
 
-	ReciboDTO generarReciboSalidaEstacionamiento(String token);
+	Boolean existToken(int token);
 
-	IngresoDTO controlEntrada(String token);
+	ReciboDTO generarReciboSalidaEstacionamiento(int token);
+
+	IngresoDTO controlEntrada(int token);
 
 }

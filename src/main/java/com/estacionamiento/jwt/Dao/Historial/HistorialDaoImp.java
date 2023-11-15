@@ -1,4 +1,4 @@
-package com.estacionamiento.jwt.dao.Historial;
+package com.estacionamiento.jwt.Dao.Historial;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;

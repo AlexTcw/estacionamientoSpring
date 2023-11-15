@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class Const {
     public final double costoPorHora = 81.50;
-    public final double costoPorMinuto = 1.35;
+    /*public final double costoPorMinuto = 1.35;*/
 
     /*id publica */
     public String idPublicaGenerator(){
