@@ -25,7 +25,11 @@ public class EstacionamientoController {
 	}
 	
 	@PostMapping("/saveOrDelete")
-	public ResponseEntity<Object> gestionarToken(@RequestParam("token") int token) {
+	public ResponseEntity<Object> gestionarToken(   
+			@RequestParam("token") int token,
+		    @RequestParam(value = "edopago", required = false) Boolean edopago,
+		    @RequestParam(value = "edoUsu", required = false) Long edoUsu) {
+		
 	    boolean tokenExistente = estacionamientoService.existToken(token);
 
 	    if (tokenExistente) {
