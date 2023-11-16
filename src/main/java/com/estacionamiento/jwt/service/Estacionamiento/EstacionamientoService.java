@@ -1,5 +1,7 @@
 package com.estacionamiento.jwt.service.Estacionamiento;
 
+import java.time.LocalDateTime;
+
 import org.springframework.stereotype.Service;
 
 import com.estacionamiento.jwt.model.DTO.IngresoDTO;
@@ -12,8 +14,16 @@ public interface EstacionamientoService {
 
 	Boolean existToken(int token);
 
-	ReciboDTO generarReciboSalidaEstacionamiento(int token);
+	//ReciboDTO generarReciboSalidaEstacionamiento(int token);
 
 	IngresoDTO controlEntrada(int token);
+
+	ReciboDTO generarReciboSalidaEstacionamiento(int token, Boolean edo, Long edoUsu);
+
+	Boolean createUsu(Long edoUsu, int token);
+
+	Long getLastToken();
+
+	LocalDateTime getEstacionamientobyToken(int token);
 
 }

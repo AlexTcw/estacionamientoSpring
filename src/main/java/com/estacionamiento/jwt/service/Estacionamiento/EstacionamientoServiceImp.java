@@ -15,6 +15,7 @@ import com.estacionamiento.jwt.model.Historial;
 import com.estacionamiento.jwt.model.Usuario;
 import com.estacionamiento.jwt.model.DTO.IngresoDTO;
 import com.estacionamiento.jwt.model.DTO.ReciboDTO;
+import com.estacionamiento.jwt.service.Usuario.UsuarioService;
 
 @Service
 public class EstacionamientoServiceImp implements EstacionamientoService {
@@ -27,6 +28,11 @@ public class EstacionamientoServiceImp implements EstacionamientoService {
 
 	@Autowired
 	UsuarioDao usrDao;
+	
+	@Override
+	public Long getLastToken() {
+		return estDao.findLastToken();
+	}
 
 	/* valida si ya existe o no el token */
 	@Override
@@ -49,17 +55,31 @@ public class EstacionamientoServiceImp implements EstacionamientoService {
             return lastId.intValue();
         }
 	}
+	
+	@Override
+	public Boolean createUsu(Long edoUsu, int token) {
+		
+		if (edoUsu!= null && edoUsu == 1L) {
+			Usuario usuario = new Usuario();
+			usuario.setContraseña("11223344");
+			usuario.setEdoUsu(edoUsu);
+			usuario.setCorreo("generico@Usuario.com");
+			usuario.setTokenEst(token);
+			usuario.setEdoUsu(1L);
+			
+			usrDao.createOrUpdateUsuario(usuario);
+			
+			return true;
+			}
+		return false;
+	}
 
 	/* se accionara si el usuario ya existia y fue detectado por la huella */
 	@Override
-	public ReciboDTO generarReciboSalidaEstacionamiento(int token) {
+	public ReciboDTO generarReciboSalidaEstacionamiento(int token, Boolean edo,Long edoUsu) {
 
 		Const costoPH = new Const();
 		Usuario usr = usrDao.findUsuarioByToken(token); 
-		if (usr == null) {
-			System.out.println("aun no hay un usuario vinculado");
-			return null;
-		}
 		Estacionamiento est = estDao.findEstacionamientoByTokenIngreso(token);
 		
 
@@ -79,40 +99,45 @@ public class EstacionamientoServiceImp implements EstacionamientoService {
 
 		if (sec >=0) {
 		    // Si los minutos son múltiplos de 60 o hay segundos, redondear hacia arriba
-			totalTiempo = Math.ceil((double) mnts / 60);
-		    totalHoras = Math.ceil((double) mnts / 60) * costoPH.costoPorHora;
+			totalTiempo = Math.ceil((double) sec / 60);
+		    totalHoras = Math.ceil((double) sec / 60) * costoPH.costoPorHora;
 		    System.out.println(totalTiempo);
 		} else {
 		    // Si los minutos son exactos, simplemente usar las horas
 			totalTiempo = hrs;
 		    totalHoras = hrs * costoPH.costoPorHora;
 		}
+		
+		/*Verificamos si el usuario ya salio*/
+		if (edo != null && edo == true) {
+			est.setTotal(totalHoras);
+			estDao.CreateOrUpdateEstacionamiento(est);
+			/* Generamos el recibo */
+			ReciboDTO recibo = new ReciboDTO();
+			Double TotalEst = est.getTotal();
+			// setCorreo
+			recibo.setCorreo(usr.getCorreo());
+			recibo.setTotalHoras(hrs);
+			recibo.setTotalMinutos(mnts);
+			recibo.setMensaje("Gracias Por su visita");
+			recibo.setTotalCosto(TotalEst);
+			/* guardamos los cambios a la entidad Historial */
+			Historial hst = new Historial();
+			hst.setIngresoFec(ingreso);
+			hst.setSalidaFec(salida);
+			hst.setTiempoDeUso(totalTiempo);
+			hst.setTotal(TotalEst);
+			hst.setCveEst(est.getCveEst());
 
-		est.setTotal(totalHoras);
-		estDao.CreateOrUpdateEstacionamiento(est);
-		/* Generamos el recibo */
-		ReciboDTO recibo = new ReciboDTO();
-		Double TotalEst = est.getTotal();
-		// setCorreo
-		recibo.setCorreo(usr.getCorreo());
-		recibo.setTotalHoras(hrs);
-		recibo.setTotalMinutos(mnts);
-		recibo.setMensaje("Gracias Por su visita");
-		recibo.setTotalCosto(TotalEst);
-		/* guardamos los cambios a la entidad Historial */
-		Historial hst = new Historial();
-		hst.setIngresoFec(ingreso);
-		hst.setSalidaFec(salida);
-		hst.setTiempoDeUso(totalTiempo);
-		hst.setTotal(TotalEst);
-		hst.setCveEst(est.getCveEst());
+			hstDao.saveOrUpdateHistorial(hst);
 
-		hstDao.saveOrUpdateHistorial(hst);
+			/* Borramos de usuario despues del traslado */
+			estDao.deleteEstacionamientoByToken(token);
 
-		/* Borramos de usuario despues del traslado */
-		estDao.deleteEstacionamientoByToken(token);
-
-		return recibo;
+			return recibo;
+		}
+		
+		return null;
 
 	}
 
@@ -137,12 +162,24 @@ public class EstacionamientoServiceImp implements EstacionamientoService {
 		/* como jalo el correo y se lo establezco al Estacionamiento */
 
 		estDao.CreateOrUpdateEstacionamiento(est);
+		
+		/*creamos al usuario generico*/
+		Usuario usr = new Usuario();
+		usr.setTokenEst(token);
+		usrDao.createOrUpdateUsuario(usr);
 
 		recibo.setIngreso(ingreso);
 		recibo.setMensaje("bienvenido al estacionamiento");
 
-		return recibo;
-
+		return recibo;				
 	}
+	
+	@Override
+	public LocalDateTime getEstacionamientobyToken(int token) {
+		Estacionamiento est = estDao.findEstacionamientoByTokenIngreso(token);
+		LocalDateTime Ingreso = est.getIngresoFec();
+		return Ingreso;
+	} 
+	
 
 }

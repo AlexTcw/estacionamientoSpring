@@ -1,7 +1,10 @@
 package com.estacionamiento.jwt.controller;
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,6 +15,7 @@ import com.estacionamiento.jwt.model.DTO.ReciboDTO;
 import com.estacionamiento.jwt.service.Estacionamiento.EstacionamientoService;
 
 @RestController
+@CrossOrigin(origins = {"*"})
 public class EstacionamientoController {
 
 	@Autowired
@@ -33,7 +37,10 @@ public class EstacionamientoController {
 	    boolean tokenExistente = estacionamientoService.existToken(token);
 
 	    if (tokenExistente) {
-	    	ReciboDTO reciboDTO = estacionamientoService.generarReciboSalidaEstacionamiento(token);
+	    	if (edopago != null&& edoUsu==1L) {
+				estacionamientoService.createUsu(edoUsu, token);
+			}
+	    	ReciboDTO reciboDTO = estacionamientoService.generarReciboSalidaEstacionamiento(token,edopago,edoUsu);
 	    	return ResponseEntity.ok(reciboDTO);
 	    } else {
 	        IngresoDTO ingresoDto = estacionamientoService.controlEntrada(token);
@@ -42,5 +49,15 @@ public class EstacionamientoController {
 			}
 	        return ResponseEntity.ok(ingresoDto);
 	    }
+	}
+	
+	@GetMapping("/lastId")
+	public Long getLatToken() {
+		return estacionamientoService.getLastToken();
+	}
+	
+	@GetMapping("/ingreso")
+	public LocalDateTime getHoraIngreso(@RequestParam("token") int token) {
+		return estacionamientoService.getEstacionamientobyToken(token);
 	}
 }

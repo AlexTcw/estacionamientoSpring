@@ -42,4 +42,9 @@ public class EstacionamientoDaoImp implements EstacionamientoDao{
 		return estRepository.findLastId();
 	}
 	
+	@Override
+	public Long findLastToken() {
+		return estRepository.findLatestEstacionamiento();
+	}
+	
 }

@@ -18,8 +18,8 @@ public class Usuario {
 	 * 2= admin
 	 * */
 	private Long edoUsu = 0L;
-	private String correo;
-	private String contraseña;
+	private String correo = "generico@usuario";
+	private String contraseña = "111111";
 
 	private int tokenEst;
 
