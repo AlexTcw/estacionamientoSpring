@@ -1,14 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fecha de Entrada</title>
   <script src="/js/bienvenida.js" defer></script>
+  <link rel="stylesheet" href="/css/bienvenida.css">
 </head>
+
 <body>
 
-  <p id="horaDeEntrada">Cargando...</p>
+  <div class="bienvenida-body">
+
+    <div class="mensaje">
+      <h1> BIENVENIDO AL SISTEMA DE ESTACIONAMIENTO</h1>
+    
+    <h2>FECHA DE ENTRADA</h2>
+    <p id="fechaDeEntrada"></p>
+    <h2>HORA DE ENTRADA</h2>
+    <p id="horaDeEntrada"></p>
+    <h2>TIEMPO DE USO</h2>
+  </div>
+    <div class="circle">
+      <div class="cronometro">
+        <p id="tiempoTranscurrido"></p>
+      </div>    
+    </div>
+    <a href="/index.html">
+      <button>CONTINUAR</button>
+    </a>
+  </div>
 
 </body>
+
 </html>

@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import org.springframework.stereotype.Service;
 
 import com.estacionamiento.jwt.model.DTO.IngresoDTO;
+import com.estacionamiento.jwt.model.DTO.PagoDto;
 import com.estacionamiento.jwt.model.DTO.ReciboDTO;
 
 @Service
@@ -25,5 +26,7 @@ public interface EstacionamientoService {
 	Long getLastToken();
 
 	LocalDateTime getEstacionamientobyToken(int token);
+
+	PagoDto getpago(int token);
 
 }

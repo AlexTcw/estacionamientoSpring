@@ -1,0 +1,98 @@
+body{
+    background-image: url("/css/bienvenida.jpg");
+    background-size: cover;
+    font-family: 'Arial', sans-serif;
+    font-stretch: extra-condensed;  
+    /*display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;*/
+}
+
+.container {    
+    text-align: left;
+    margin: 0;  
+    align-items: center;
+}
+.bienvenida-body {
+    margin-top: 10%;
+    margin-left: 10%;
+    display: inline-block;
+    color: #fff;
+    padding: 40px;
+    vertical-align: top;
+    border-top-left-radius:20px ;
+    border-bottom-left-radius:20px ;
+    /* Alinea la parte superior de los elementos */
+    box-sizing: border-box;
+    background-color: #111;
+    width: 50rem;
+    height: 35rem;
+    /* Incluye el padding y border en el ancho */
+}
+
+.pago-Body {
+    display: inline-block;
+    margin-top: 10%;
+    padding: 40px;
+    vertical-align: top;
+    border-top-right-radius:20px ;
+    border-bottom-right-radius:20px ;
+    background-color: #fff;
+    box-sizing: border-box;
+    width: 40rem;
+    height: 35rem;
+    /* Incluye el padding y border en el ancho */
+}
+
+.pago-Body button{
+    border-radius: 10px;
+    border: none;
+    background-color: rgb(62, 83, 104);
+    color: #fff;
+    padding: 10px;
+    font-size: 24px;
+    margin-left: 14rem;
+}
+
+.fechaEntrada, .horaEntrada, .tiempoUso{
+    box-shadow: -10px 10px 10px rgba(63, 62, 62, 0.5);
+    background-color: #fff;
+    color: #111;
+    padding: 5px;
+    padding-left: 20px;
+    border-radius: 10px;    
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+
+.fechaEntrada p, .horaEntrada p, .tiempoUso p, .iva p{
+    text-align: right;
+    padding-right: 10%;
+    font-size: 24px;
+}
+
+.subtotal, .iva, .total{
+    box-shadow: -10px 10px 10px rgba(63, 62, 62, 0.2);
+    background-color: #111;
+    border-radius: 10px;
+    color: #fff;    
+    padding: 5px;
+    padding-left: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.subtotal p,
+.total p {
+    text-align: right;
+    padding-right: 10%;
+    font-size: 1.5em; /* Aproximadamente 24px para un valor estándar de tamaño de fuente */
+}
+
+a {
+    color: #fff;
+    font-size: 24px;
+}

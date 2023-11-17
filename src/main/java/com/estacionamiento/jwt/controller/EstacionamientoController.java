@@ -1,6 +1,7 @@
 package com.estacionamiento.jwt.controller;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,54 +11,79 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.estacionamiento.jwt.model.DTO.BienvenidaDTO;
 import com.estacionamiento.jwt.model.DTO.IngresoDTO;
+import com.estacionamiento.jwt.model.DTO.PagoDto;
 import com.estacionamiento.jwt.model.DTO.ReciboDTO;
 import com.estacionamiento.jwt.service.Estacionamiento.EstacionamientoService;
 
 @RestController
-@CrossOrigin(origins = {"*"})
+@CrossOrigin(origins = { "*" })
 public class EstacionamientoController {
 
 	@Autowired
 	EstacionamientoService estacionamientoService;
-	
-	/*"http://192.168.1.77:8080/api/fingerprint/generateToken"*/
-	
+
+	/* "http://192.168.1.77:8080/api/fingerprint/generateToken" */
+
 	@GetMapping("/generateToken")
 	public int generateTokenFromFP() {
 		return estacionamientoService.generateNewToken();
 	}
-	
-	@PostMapping("/saveOrDelete")
-	public ResponseEntity<Object> gestionarToken(   
-			@RequestParam("token") int token,
-		    @RequestParam(value = "edopago", required = false) Boolean edopago,
-		    @RequestParam(value = "edoUsu", required = false) Long edoUsu) {
-		
-	    boolean tokenExistente = estacionamientoService.existToken(token);
 
-	    if (tokenExistente) {
-	    	if (edopago != null&& edoUsu==1L) {
+	@PostMapping("/saveOrDelete")
+	public ResponseEntity<Object> gestionarToken(@RequestParam("token") int token,
+			@RequestParam(value = "edopago", required = false) Boolean edopago,
+			@RequestParam(value = "edoUsu", required = false) Long edoUsu) {
+
+		boolean tokenExistente = estacionamientoService.existToken(token);
+
+		if (tokenExistente) {
+			if (edopago != null && edoUsu == 1L) {
 				estacionamientoService.createUsu(edoUsu, token);
 			}
-	    	ReciboDTO reciboDTO = estacionamientoService.generarReciboSalidaEstacionamiento(token,edopago,edoUsu);
-	    	return ResponseEntity.ok(reciboDTO);
-	    } else {
-	        IngresoDTO ingresoDto = estacionamientoService.controlEntrada(token);
-	        if (ingresoDto == null) {
+			ReciboDTO reciboDTO = estacionamientoService.generarReciboSalidaEstacionamiento(token, edopago, edoUsu);
+			return ResponseEntity.ok(reciboDTO);
+		} else {
+			IngresoDTO ingresoDto = estacionamientoService.controlEntrada(token);
+			if (ingresoDto == null) {
 				return (ResponseEntity<Object>) ResponseEntity.badRequest();
 			}
-	        return ResponseEntity.ok(ingresoDto);
-	    }
+			return ResponseEntity.ok(ingresoDto);
+		}
 	}
 	
+	@GetMapping("/try-pay")
+	public PagoDto tryPay(@RequestParam("token")int token) {
+		PagoDto pago = estacionamientoService.getpago(token);
+		return pago;
+		}
+
 	@GetMapping("/lastId")
 	public Long getLatToken() {
 		return estacionamientoService.getLastToken();
 	}
 	
+	@GetMapping("/pago")
+	public PagoDto getPagoInfo(@RequestParam("token") int token) {
+		return estacionamientoService.getpago(token);
+	}
+
 	@GetMapping("/ingreso")
-	public LocalDateTime getHoraIngreso(@RequestParam("token") int token) {
-		return estacionamientoService.getEstacionamientobyToken(token);
+	public BienvenidaDTO getHoraIngreso(@RequestParam("token") int token) {
+		LocalDateTime horaIngreso = estacionamientoService.getEstacionamientobyToken(token);
+
+		// Formatear la fecha y hora por separado
+		DateTimeFormatter formatterFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		DateTimeFormatter formatterHora = DateTimeFormatter.ofPattern("HH:mm");
+
+		String fechaFormateada = horaIngreso.format(formatterFecha);
+		String horaFormateada = horaIngreso.format(formatterHora);
+
+		BienvenidaDTO bienvenidaDTO = new BienvenidaDTO();
+		bienvenidaDTO.setFecha(fechaFormateada);
+		bienvenidaDTO.setHora(horaFormateada);
+
+		return bienvenidaDTO;
 	}
 }

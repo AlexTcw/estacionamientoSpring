@@ -64,8 +64,22 @@ function getLastToken() {
       document.getElementById("tiempoTranscurrido").textContent = `${tiempoFormateado}`;
     }, 1000);
   }
-  
+  function tryPay(token){
+    var requestOptions = {
+      method: 'GET',
+      redirect: 'follow'
+    };
+    
+    fetch(`http://localhost:8080/try-pay?token=${token}`, requestOptions)
+      .then(response => response.json())
+      .then(result => {
+        document.getElementById("subtotal").textContent = "$ "+result.subTotal+" MNX";
+        document.getElementById("total").textContent = "$ "+result.total+" MNX";
+      })
+      .catch(error => console.log('error', error));
+  }
   // Llamada a las funciones
   getLastToken().then(token => getHoraDeEntrada(token));
+  getLastToken().then(token => tryPay(token));
   
   

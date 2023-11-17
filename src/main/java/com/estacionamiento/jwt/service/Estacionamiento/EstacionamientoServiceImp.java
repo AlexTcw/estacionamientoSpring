@@ -14,6 +14,7 @@ import com.estacionamiento.jwt.model.Estacionamiento;
 import com.estacionamiento.jwt.model.Historial;
 import com.estacionamiento.jwt.model.Usuario;
 import com.estacionamiento.jwt.model.DTO.IngresoDTO;
+import com.estacionamiento.jwt.model.DTO.PagoDto;
 import com.estacionamiento.jwt.model.DTO.ReciboDTO;
 import com.estacionamiento.jwt.service.Usuario.UsuarioService;
 
@@ -180,6 +181,53 @@ public class EstacionamientoServiceImp implements EstacionamientoService {
 		LocalDateTime Ingreso = est.getIngresoFec();
 		return Ingreso;
 	} 
+	
+	@Override
+	public PagoDto getpago(int token) {
+		Estacionamiento est = estDao.findEstacionamientoByTokenIngreso(token);
+		Const costoPH = new Const();
+		PagoDto pago = new PagoDto();
+		/* recupera la entrada y establece la salida del usuario */
+		LocalDateTime ingreso = est.getIngresoFec();
+		LocalDateTime salida = LocalDateTime.now();
+		est.setSalidaFec(salida);
+
+		/* calcula el costo por uso */
+		Duration duration = Duration.between(ingreso, salida);
+		long hrs = duration.toHours();
+		long sec = duration.toSeconds();
+
+		double totalHoras;
+
+		if (sec >=0) {
+		    // Si los minutos son múltiplos de 60 o hay segundos, redondear hacia arriba
+		    totalHoras = Math.ceil((double) sec/3600) * costoPH.costoPorHora;
+		} else {
+		    // Si los minutos son exactos, simplemente usar las horas
+		    totalHoras = hrs * costoPH.costoPorHora;
+		}
+		
+		pago.setSubTotal(totalHoras);
+		pago.setTotal(Math.ceil(totalHoras * 1.16));
+		
+		return pago;
+	}
+	
+	public boolean cambiaEdoPago(int token, long edoUsu) {
+		Estacionamiento est = estDao.findEstacionamientoByTokenIngreso(token);
+		Const costoPH = new Const();
+		
+		if (edoUsu != 1) {
+			return false;
+		}
+		
+		est.setEdoPago(true);
+		estDao.CreateOrUpdateEstacionamiento(est);
+		return true;
+	}
+	
+	
+	
 	
 
 }

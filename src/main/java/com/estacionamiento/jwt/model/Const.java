@@ -3,7 +3,7 @@ package com.estacionamiento.jwt.model;
 import java.util.Random;
 
 public class Const {
-    public final double costoPorHora = 81.50;
+    public final double costoPorHora = 70.0;
     /*public final double costoPorMinuto = 1.35;*/
 
     /*id publica */
