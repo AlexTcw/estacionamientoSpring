@@ -29,4 +29,6 @@ public interface EstacionamientoService {
 
 	PagoDto getpago(int token);
 
+	PagoDto gerReciboPagado(PagoDto pago, int token);
+
 }

@@ -58,6 +58,11 @@ public class EstacionamientoController {
 		PagoDto pago = estacionamientoService.getpago(token);
 		return pago;
 		}
+	
+	@GetMapping("/already-pay") 
+	PagoDto pagado(@RequestParam("pago") PagoDto pago) {
+		return null
+	}
 
 	@GetMapping("/lastId")
 	public Long getLatToken() {
