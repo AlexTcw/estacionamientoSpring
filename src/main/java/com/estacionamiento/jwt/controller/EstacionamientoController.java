@@ -16,11 +16,15 @@ import com.estacionamiento.jwt.model.DTO.IngresoDTO;
 import com.estacionamiento.jwt.model.DTO.PagoDto;
 import com.estacionamiento.jwt.model.DTO.ReciboDTO;
 import com.estacionamiento.jwt.service.Estacionamiento.EstacionamientoService;
+import com.estacionamiento.jwt.service.registry.RegistryService;
 
 @RestController
 @CrossOrigin(origins = { "*" })
 public class EstacionamientoController {
 
+	@Autowired
+	RegistryService registryService;
+	
 	@Autowired
 	EstacionamientoService estacionamientoService;
 
@@ -42,40 +46,48 @@ public class EstacionamientoController {
 			if (edopago != null && edoUsu == 1L) {
 				estacionamientoService.createUsu(edoUsu, token);
 			}
-			ReciboDTO reciboDTO = estacionamientoService.generarReciboSalidaEstacionamiento(token, edopago, edoUsu);
-			return ResponseEntity.ok(reciboDTO);
+			
+			/*ReciboDTO reciboDTO = estacionamientoService.generarReciboSalidaEstacionamiento(token, edopago, edoUsu);			
+			return ResponseEntity.ok(reciboDTO);*/			
+			
+			registryService.setRegistry3Exit(token);		
+			return null;
 		} else {
 			IngresoDTO ingresoDto = estacionamientoService.controlEntrada(token);
 			if (ingresoDto == null) {
 				return (ResponseEntity<Object>) ResponseEntity.badRequest();
 			}
+			registryService.setRegistry1Enrroll(token);
 			return ResponseEntity.ok(ingresoDto);
 		}
-	}
+	}	
 	
 	@GetMapping("/try-pay")
 	public PagoDto tryPay(@RequestParam("token")int token) {
+		token = registryService.getLastTokenRegistry();
 		PagoDto pago = estacionamientoService.getpago(token);
 		return pago;
 		}
 	
 	@GetMapping("/already-pay") 
 	PagoDto pagado(@RequestParam("pago") PagoDto pago) {
-		return null
+		return null;
 	}
 
 	@GetMapping("/lastId")
-	public Long getLatToken() {
-		return estacionamientoService.getLastToken();
+	public int getLatToken() {
+		return registryService.getLastTokenRegistry();
 	}
 	
 	@GetMapping("/pago")
 	public PagoDto getPagoInfo(@RequestParam("token") int token) {
+		token = registryService.getLastTokenRegistry();
 		return estacionamientoService.getpago(token);
 	}
 
 	@GetMapping("/ingreso")
-	public BienvenidaDTO getHoraIngreso(@RequestParam("token") int token) {
+	public BienvenidaDTO getHoraIngreso() {
+		int token = registryService.getLastTokenRegistry();
 		LocalDateTime horaIngreso = estacionamientoService.getEstacionamientobyToken(token);
 
 		// Formatear la fecha y hora por separado
