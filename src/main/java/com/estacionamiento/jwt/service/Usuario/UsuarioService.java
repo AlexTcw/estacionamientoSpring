@@ -13,4 +13,6 @@ public interface UsuarioService {
 
 	Usuario createNewUsu(String correo, String pswd, int token);
 
+	Boolean existUsuario(String correo, String pass, int token);
+
 }

@@ -39,14 +39,15 @@ body{
     vertical-align: top;
     border-top-right-radius:20px ;
     border-bottom-right-radius:20px ;
-    background-color: #fff;
+    /*background-color: #ffffff;*/
+    background-color: rgba(255, 255, 255,0.6);
     box-sizing: border-box;
     width: 40rem;
     height: 35rem;
     /* Incluye el padding y border en el ancho */
 }
 
-.pago-Body button{
+.pago-Body button, .pensioncontainer button{
     border-radius: 10px;
     border: none;
     background-color: rgb(62, 83, 104);
@@ -95,4 +96,15 @@ body{
 a {
     color: #fff;
     font-size: 24px;
+}
+
+.pensioncontainer{
+    font-size: 20px;
+    background-color: rgba(255, 255, 255,0.6);
+    margin-left: 52%; 
+    margin-top: 10px;
+    width: 600px;
+    border-radius: 15px;
+    padding: 10px;
+    padding-left: 20px;
 }

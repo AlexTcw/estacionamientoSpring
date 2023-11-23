@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.estacionamiento.jwt.model.DTO.BienvenidaDTO;
 import com.estacionamiento.jwt.model.DTO.IngresoDTO;
 import com.estacionamiento.jwt.model.DTO.PagoDto;
-import com.estacionamiento.jwt.model.DTO.ReciboDTO;
 import com.estacionamiento.jwt.service.Estacionamiento.EstacionamientoService;
 import com.estacionamiento.jwt.service.registry.RegistryService;
 

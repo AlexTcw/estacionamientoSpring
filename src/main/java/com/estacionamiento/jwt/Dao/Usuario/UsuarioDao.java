@@ -12,4 +12,8 @@ public interface UsuarioDao {
 
 	Usuario findUsuarioByToken(int token);
 
+	Usuario finUsuarioByCorreoYpass(String correo, String pass, int token);
+
+	Boolean existUsuarioByCorreoAndContraseñaAndTokenEst(String correo, String pass, int token);
+
 }

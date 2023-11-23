@@ -33,16 +33,14 @@ public class UsuarioServiceImp implements UsuarioService {
 		if (correo == null || pswd == null) {
 			return null;
 		}
-
-		Usuario usuario = usudao.findUsuarioByCorreo(correo);
-		String password = usuario.getContraseña();
-		if (password == pswd) {
-			return usuario;
-		} else {
-			return null;
-		}
+		return usudao.finUsuarioByCorreoYpass(correo, pswd, token);		
 
 	}
+	
+	@Override 
+	public Boolean existUsuario(String correo, String pass, int token) {
+		return usudao.existUsuarioByCorreoAndContraseñaAndTokenEst(correo, pass, token);
+	} 
 
 	@Override
 	public Usuario createNewUsu(String correo, String pswd, int token) {
@@ -55,11 +53,11 @@ public class UsuarioServiceImp implements UsuarioService {
 		usuario.setCorreo(correo);
 		usuario.setContraseña(pswd);
 		usuario.setTokenEst(token);
+		usuario.setEdoUsu(1L);
 
 		usudao.createOrUpdateUsuario(usuario);
 
 		return usuario;
 
-	}
-
+	}		
 }

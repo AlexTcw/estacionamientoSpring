@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/css/loginPension.css">
+    <script src="/js/loginpension.js"></script>
+</head>
+
+<body>
+    <div class="info">
+        <img src="/css/parking.png" alt="parking">
+        <p>costo para pensionados: <br>
+            <p id="costo">$53 por hora</p>
+        </p>
+    </div>
+    <div class="tab-content">
+        <div id="signup" class="signup">
+            <h1>REGISTRARSE</h1>
+            <div class="top-row">
+                <div class="field-wrap">
+                    <label>
+                        Nombre(s)<span class="req">*</span><br>
+                    </label>
+                    <input id="nombre" type="text" required autocomplete="off" />
+                </div>
+        
+                <div class="field-wrap">
+                    <label>
+                        Apellido(s)<span class="req">*</span><br>
+                    </label>
+                    <input id="apellido" type="text" required autocomplete="off" />
+                </div>
+            </div>
+        
+            <div class="field-wrap">
+                <label>
+                    Email<span class="req">*</span><br>
+                </label>
+                <input id="email" type="email" required autocomplete="off" />
+            </div>
+        
+            <div class="field-wrap">
+                <label>
+                    Nueva Contraseña<span class="req">*</span><br>
+                </label>
+                <input id="password" type="password" required autocomplete="off" />
+            </div>
+        
+            <button id="signup-button" type="submit" class="button button-block" onclick="validateForm()">Registrarse</button>
+        </div>
+
+        <div class="login">
+            <h1>INGRESAR</h1>
+            <div class="field-wrap">
+              <label>Email<span class="req">*</span><br></label>
+              <input type="email" id="email" required autocomplete="off" />
+            </div>
+          
+            <div class="field-wrap">
+              <label>Contraseña<span class="req">*</span><br></label>
+              <input type="password" id="password" required autocomplete="off" />
+            </div>
+            
+            <button class="button button-block" onclick="findUser()">Ingresar</button>
+          </div>
+
+    </div><!-- tab-content -->
+</body>
+
+</html>

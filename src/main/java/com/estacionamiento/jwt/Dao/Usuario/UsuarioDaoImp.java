@@ -32,4 +32,14 @@ public class UsuarioDaoImp implements UsuarioDao {
 	public Usuario findUsuarioByToken(int token) {
 		return usrRepository.findUsuarioByTokenEst(token);
 	}
+	
+	@Override
+	public Usuario finUsuarioByCorreoYpass(String correo, String pass, int token) {
+		return usrRepository.findByCorreoAndContraseñaAndTokenEst(correo, correo, token);
+	}
+	
+	@Override
+	public Boolean existUsuarioByCorreoAndContraseñaAndTokenEst(String correo, String pass, int token) {
+		return usrRepository.existsByCorreoAndContraseñaAndTokenEst(correo, pass, token);
+	}
 }
