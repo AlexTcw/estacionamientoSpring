@@ -9,8 +9,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.estacionamiento.jwt.Dao.Usuario.UsuarioDao;
 import com.estacionamiento.jwt.model.Usuario;
 import com.estacionamiento.jwt.service.Usuario.UsuarioService;
+
+import jakarta.persistence.NonUniqueResultException;
 
 @RestController
 @CrossOrigin(origins = { "*" })
@@ -18,6 +21,9 @@ public class UsuarioController {
 
 	@Autowired
 	UsuarioService usuarioService;
+
+	@Autowired
+	UsuarioDao usuarioDao;
 
 	@GetMapping("/recoverOrCreateUSU")
 	public ResponseEntity<?> recoverOrCreateUsuario(@RequestParam String correo, @RequestParam String pswd,
@@ -55,12 +61,26 @@ public class UsuarioController {
 			return ResponseEntity.badRequest().body("La contraseña no es válida.");
 		}
 	}
-	
+
 	@PostMapping("/createUsuario")
 	public ResponseEntity<String> createUsu(@RequestParam String correo, @RequestParam String pswd,
 			@RequestParam int token) {
-		Usuario Usr = usuarioService.createNewUsu(correo, pswd, token);
-		return ResponseEntity.ok("usuario creado: "+Usr);
+		try {
+			if (correo.equals("generico@usuario")) {
+				return ResponseEntity.badRequest().body("Usuario no válido");
+			}
+			Boolean findUsr = usuarioService.findUsuarioByCorreoUsu(correo);
+			if (findUsr == false) {
+				Usuario Usr = usuarioService.createNewUsu(correo, pswd, token);
+				return ResponseEntity.ok("usuario creado: "+Usr);
+			}
+			return ResponseEntity.badRequest().body("Usuario no válido");
+		} catch (NonUniqueResultException e) {
+			return ResponseEntity.badRequest().body("Usuario no válido");
+		} catch (Exception e) {			
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Usuario no válido");
+		
+		}
 	}
 
 }

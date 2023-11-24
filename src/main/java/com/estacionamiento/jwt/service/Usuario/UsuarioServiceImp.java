@@ -58,6 +58,5 @@ public class UsuarioServiceImp implements UsuarioService {
 		usudao.createOrUpdateUsuario(usuario);
 
 		return usuario;
-
 	}		
 }

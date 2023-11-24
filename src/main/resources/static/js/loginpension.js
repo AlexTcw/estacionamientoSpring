@@ -25,7 +25,7 @@ function getLastToken() {
       .catch(error => console.log('error', error));
   }
 
-  async function findUser() {
+  async function createUser() {
     // Obtener el último token usando la función getLastToken()
     var lastToken = await getLastToken();
 
@@ -33,13 +33,12 @@ function getLastToken() {
     var password = document.getElementById("password").value;
 
     var requestOptions = {
-      method: 'GET',
+      method: 'POST',
       redirect: 'follow'
     };
 
     // Asegúrate de agregar los valores de correo, contraseña y token a la URL de la solicitud
-    var url = "http://localhost:8080/existUsu?correo="+encodeURIComponent(email)+"&pswd="+encodeURIComponent(password)+"&token="+encodeURIComponent(lastToken);
-
+    var url = "http://localhost:8080/createUsuario?correo="+encodeURIComponent(email)+"&pswd="+encodeURIComponent(password)+"&token="+encodeURIComponent(lastToken);
     fetch(url, requestOptions)
       .then(response => response.text())
       .then(result => console.log(result))
