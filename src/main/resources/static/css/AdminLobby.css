@@ -1,0 +1,91 @@
+body {
+    background-image: url("/css/bienvenida.jpg");
+    background-size: cover;
+    font-family: 'Arial', sans-serif;
+    font-stretch: extra-condensed;
+}
+
+.container {
+    text-align: left;
+    margin: 0;
+    align-items: center;
+    background-color: rgba(66, 219, 52, 0.7);
+}
+
+.EstacionamientoContainer {
+    margin-top: 1%;
+    display: inline-block;
+    color: #fff;
+    padding: 20px;
+    vertical-align: top;
+    box-sizing: border-box;
+    width: 100%;
+    max-height: 30rem;
+    overflow-y: auto;
+}
+
+.Usuarios-container {
+    margin-top: 1%;
+    display: inline-block;
+    color: #fff;
+    padding: 20px;
+    vertical-align: top;
+    box-sizing: border-box;
+    width: 100%;
+    max-height: 30rem;
+    overflow-y: auto;
+}
+
+
+.Historial-Body {
+    margin-top: 1%;
+    display: inline-block;
+    color: #fff;
+    padding: 20px;
+    vertical-align: top;
+    box-sizing: border-box;
+    width: 100%;
+    max-height: 30rem;
+    overflow-y: auto;
+}
+
+button {
+    border-radius: 10px;
+    border: none;
+    background-color: rgb(62, 83, 104);
+    color: #fff;
+    padding: 10px;
+    font-size: 24px;
+    font-size: 16px;
+}
+
+
+a {
+    color: #fff;
+    font-size: 24px;
+    margin-left: 20px;
+    margin-top: 40px;
+}
+
+
+#comeBackButton {
+    margin-top: 50px;
+    cursor: pointer;
+}
+
+#comeBackButton:hover {
+    text-decoration: underline;
+}
+
+.table table-bordered {
+    border-radius: 15px;
+}
+
+input {
+    appearance: none;
+    border: none;
+    outline: none;
+    background: transparent;
+    width: 100%;
+    color: #fff;
+}

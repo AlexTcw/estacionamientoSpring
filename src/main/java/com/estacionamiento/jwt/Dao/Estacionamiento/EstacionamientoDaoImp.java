@@ -1,5 +1,7 @@
 package com.estacionamiento.jwt.Dao.Estacionamiento;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -28,7 +30,7 @@ public class EstacionamientoDaoImp implements EstacionamientoDao{
 	
 	@Override
 	public Estacionamiento findEstacionamientoByTokenIngreso(int token) {
-		return estRepository.findByTokenIngreso(token);
+		return estRepository.findEstacionamientoByTokenIngreso(token);
 	}
 	
 	@Override
@@ -45,6 +47,16 @@ public class EstacionamientoDaoImp implements EstacionamientoDao{
 	@Override
 	public Long findLastToken() {
 		return estRepository.findLatestEstacionamiento();
+	}
+
+	@Override
+	public List<Estacionamiento> findAllEstacionamientos(){
+		return estRepository.findAll();
+	}
+
+	@Override
+	public void deleteEstacionamientoById(Long id){
+		estRepository.deleteById(id);
 	}
 	
 }

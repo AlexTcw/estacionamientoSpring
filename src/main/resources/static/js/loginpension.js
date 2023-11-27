@@ -1,46 +1,77 @@
-function validateForm() {
-    var nombre = document.getElementById("nombre").value;
-    var apellido = document.getElementById("apellido").value;
-    var email = document.getElementById("email").value;
-    var password = document.getElementById("password").value;
+function getLastToken() {
+  var requestOptions = {
+    method: 'GET',
+    redirect: 'follow'
+  };
 
-    // Verifica si los campos requeridos están llenos
-    if (nombre === "" || apellido === "" || email === "" || password === "") {
-        alert("Por favor, complete todos los campos obligatorios.");
-    } else {
-        // Puedes agregar aquí lógica adicional si es necesario
-        alert("Registro exitoso. Puedes avanzar.");
-    }
+  // Devuelve la promesa de la llamada fetch
+  return fetch("http://localhost:8080/lastId", requestOptions)
+    .then(response => response.text())
+    .catch(error => console.log('error', error));
 }
 
-function getLastToken() {
-    var requestOptions = {
-      method: 'GET',
-      redirect: 'follow'
-    };
+document.addEventListener("DOMContentLoaded", function () {
+  var signupButton = document.getElementById("signup-button");
+  signupButton.addEventListener("click", validateAndSignup);
+});
 
-    // Devuelve la promesa de la llamada fetch
-    return fetch("http://localhost:8080/lastId", requestOptions)
-      .then(response => response.text())
-      .catch(error => console.log('error', error));
+function validateAndSignup() {
+  // Validar el formulario antes de continuar
+  if (!validateForm()) {
+    // Si la validación falla, no realizar el registro
+    return;
   }
 
-  async function createUser() {
-    // Obtener el último token usando la función getLastToken()
-    var lastToken = await getLastToken();
+  // Si la validación es exitosa, realizar la acción de registro
+  signupfunction();
+}
 
-    var email = document.getElementById("email").value;
-    var password = document.getElementById("password").value;
+function validateForm() {
+  // Obtener los valores de los campos del formulario
+  var nombre = document.getElementById("nombre").value;
+  var apellido = document.getElementById("placa").value;
+  var email = document.getElementById("emailSignup").value;
+  var password = document.getElementById("passwordSignup").value;
+
+  // Verificar si los campos requeridos están vacíos
+  if (nombre.trim() === '' || apellido.trim() === '' || email.trim() === '' || password.trim() === '') {
+    alert('Por favor, complete todos los campos.');
+    return false;
+  }
+
+  // Puedes agregar más validaciones según sea necesario
+
+  return true; // El formulario es válido
+}
+
+function signupfunction() {
+  // Obtener valores de los campos de correo y contraseña
+  var email = document.getElementById("emailSignup").value;
+  var password = document.getElementById("passwordSignup").value;
+  var placa = document.getElementById("placa").value;
+  var nombreUsu = document.getElementById("nombre").value
+
+  // Obtener el último token utilizando la función getLastToken()
+  getLastToken().then(lastToken => {
+    // Construir la URL con los valores de correo, contraseña y último token
+    var url = "http://localhost:8080/createUsuario?correo=" + email + "&pswd=" + password + "&token=" + lastToken + "&placa=" + placa + "&nombre=" + nombreUsu;
 
     var requestOptions = {
       method: 'POST',
       redirect: 'follow'
     };
 
-    // Asegúrate de agregar los valores de correo, contraseña y token a la URL de la solicitud
-    var url = "http://localhost:8080/createUsuario?correo="+encodeURIComponent(email)+"&pswd="+encodeURIComponent(password)+"&token="+encodeURIComponent(lastToken);
+    // Realizar la llamada fetch con la URL actualizada
     fetch(url, requestOptions)
       .then(response => response.text())
-      .then(result => console.log(result))
+      .then(result => {
+        // Mostrar la respuesta del servidor en un alert
+        alert(result);
+        console.log(result); // También puedes imprimirlo en la consola si lo deseas
+        window.location.href = 'PensionLoby.html';
+      })
       .catch(error => console.log('error', error));
-  }
+  });
+}
+
+

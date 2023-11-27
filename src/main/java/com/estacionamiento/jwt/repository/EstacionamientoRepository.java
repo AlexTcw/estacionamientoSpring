@@ -10,7 +10,7 @@ public interface EstacionamientoRepository extends JpaRepository<Estacionamiento
 	@Query(value = "SELECT cve_est FROM estacionamiento ORDER BY cve_est DESC LIMIT 1", nativeQuery = true)
 	Long findLastId();
 
-	Estacionamiento findByTokenIngreso(int tokenIngreso);
+	Estacionamiento findEstacionamientoByTokenIngreso(int tokenIngreso);
 
 	void deleteByTokenIngreso(int tokenIngreso);
 

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.estacionamiento.jwt.service.registry.RegistryService;
@@ -20,6 +21,16 @@ public class RegistryController {
 	public int getEdoRegistry() {
 		return registryService.getLastEdoRegistry();
 	}
+
+	@GetMapping("/setedoreg")
+    public ResponseEntity<String> setEdoReg(@RequestParam int token, @RequestParam int edo) {
+        Boolean registrySet = registryService.setRegistryEdo(token,edo);
+        if (registrySet != null && registrySet) {
+            return ResponseEntity.ok("Registro establecido correctamente");
+        } else {
+            return ResponseEntity.status(500).body("Error al establecer el registro");
+        }
+    }
 	
 	@GetMapping("/setedoreg1")
     public ResponseEntity<String> setEdoReg1() {
@@ -52,4 +63,6 @@ public class RegistryController {
             return ResponseEntity.status(500).body("Error al establecer el registro");
         }
     }
+
+    
 }

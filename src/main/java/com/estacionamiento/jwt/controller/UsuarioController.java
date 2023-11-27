@@ -1,5 +1,8 @@
 package com.estacionamiento.jwt.controller;
 
+import java.util.ArrayList;
+
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.estacionamiento.jwt.Dao.Usuario.UsuarioDao;
 import com.estacionamiento.jwt.model.Usuario;
+import com.estacionamiento.jwt.model.DTO.UsrInfoDto;
 import com.estacionamiento.jwt.service.Usuario.UsuarioService;
 
 import jakarta.persistence.NonUniqueResultException;
@@ -25,32 +29,6 @@ public class UsuarioController {
 	@Autowired
 	UsuarioDao usuarioDao;
 
-	@GetMapping("/recoverOrCreateUSU")
-	public ResponseEntity<?> recoverOrCreateUsuario(@RequestParam String correo, @RequestParam String pswd,
-			@RequestParam(value = "token", required = false) int token) {
-		if (correo == null || pswd == null) {
-			return ResponseEntity.badRequest().body("Debes ingresar tu correo y contraseña.");
-		}
-
-		Boolean usuarioExist = usuarioService.findUsuarioByCorreoUsu(correo);
-
-		if (usuarioExist) {
-			Usuario usuario = usuarioService.recoverUsuario(correo, pswd, token);
-			if (usuario != null) {
-				return ResponseEntity.ok(usuario);
-			} else {
-				return ResponseEntity.badRequest().body("La contraseña no es válida.");
-			}
-		} else {
-			Usuario nuevoUsuario = usuarioService.createNewUsu(correo, pswd, token);
-			if (nuevoUsuario != null) {
-				return ResponseEntity.ok(nuevoUsuario);
-			} else {
-				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se pudo crear el usuario.");
-			}
-		}
-	}
-
 	@GetMapping("/existUsu")
 	public ResponseEntity<String> recoverUsu(@RequestParam String correo, @RequestParam String pswd,
 			@RequestParam int token) {
@@ -64,23 +42,111 @@ public class UsuarioController {
 
 	@PostMapping("/createUsuario")
 	public ResponseEntity<String> createUsu(@RequestParam String correo, @RequestParam String pswd,
-			@RequestParam int token) {
+			@RequestParam int token, @RequestParam String placa, @RequestParam String nombre) {
 		try {
 			if (correo.equals("generico@usuario")) {
 				return ResponseEntity.badRequest().body("Usuario no válido");
 			}
 			Boolean findUsr = usuarioService.findUsuarioByCorreoUsu(correo);
 			if (findUsr == false) {
-				Usuario Usr = usuarioService.createNewUsu(correo, pswd, token);
-				return ResponseEntity.ok("usuario creado: "+Usr);
+				Long edoUsu = 1L;
+				usuarioService.createNewUsu(correo, pswd, token, placa, nombre, edoUsu);
+
+				List<Usuario> usuariosToDelete = usuarioDao.findUsuariosByToken(token);
+
+				for (Usuario usuario : usuariosToDelete) {
+					if (usuario.getEdoUsu() == 0L) {
+						usuarioDao.deleteUsuarioByCveUsu(usuario.getCveUsu());
+					}
+				}
+
+				return ResponseEntity.ok("usuario creado, redirigiendo");
 			}
 			return ResponseEntity.badRequest().body("Usuario no válido");
 		} catch (NonUniqueResultException e) {
 			return ResponseEntity.badRequest().body("Usuario no válido");
-		} catch (Exception e) {			
+		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Usuario no válido");
-		
+
 		}
+	}
+
+	@PostMapping("/createUsuarioAdmin")
+	public ResponseEntity<String> createUsuAdmin(@RequestParam String correo, @RequestParam String pswd,
+			@RequestParam int token, @RequestParam String nombre) {
+		try {
+			if (correo.equals("generico@usuario")) {
+				return ResponseEntity.badRequest().body("Usuario no válido");
+			}
+			Boolean findUsr = usuarioService.findUsuarioByCorreoUsu(correo);
+			if (findUsr == false) {
+				Long edoUsu = 2L;
+				String placa = "";
+				usuarioService.createNewUsu(correo, pswd, token, placa, nombre, edoUsu);
+
+				List<Usuario> usuariosToDelete = usuarioDao.findUsuariosByToken(token);
+
+				for (Usuario usuario : usuariosToDelete) {
+					if (usuario.getEdoUsu() == 0L) {
+						usuarioDao.deleteUsuarioByCveUsu(usuario.getCveUsu());
+					}
+				}
+
+				return ResponseEntity.ok("usuario creado, redirigiendo");
+			}
+			return ResponseEntity.badRequest().body("Usuario no válido");
+		} catch (NonUniqueResultException e) {
+			return ResponseEntity.badRequest().body("Usuario no válido");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Usuario no válido");
+
+		}
+	}
+
+	@GetMapping("/getUsrTabl")
+	public List<String> getTable(@RequestParam int token) {
+		List<String> tabla = new ArrayList();
+		tabla = usuarioService.getTablaPLacas(token);
+
+		return tabla;
+	}
+
+	@GetMapping("/getUsrInfo")
+	public UsrInfoDto getInfoUsr(@RequestParam int token) {
+		return usuarioService.getUsrInfo(token);
+	}
+
+	@GetMapping("/deleteUserByCVE")
+	public void deleteUserByCVE(@RequestParam int token) {
+		usuarioService.deleteUsuarioByCveUsu(token);
+	}
+
+	@PostMapping("/updateUsuTable")
+	public void updateTableUsr(@RequestParam int token, @RequestParam String placa) {
+		usuarioService.updateTableUsr(token, placa);
+	}
+
+	@GetMapping("/getTokenUsr")
+	public int getUsuarioTokenByCorreo(@RequestParam String correo, @RequestParam String contraseña) {
+
+		int tokUsu = usuarioService.getUsuarioTokenByCorreoAndPSW(correo, contraseña);
+
+		return tokUsu;
+	}
+
+	@GetMapping("/getAllUsu")
+	public List<Usuario> getAllUsu(){
+		return usuarioService.getAllUsu();
+	}
+
+	@GetMapping("/deleteUsuById")
+	public void deleteUserByCVE(@RequestParam Long cve){
+		usuarioDao.deleteUsuarioByCveUsu(cve);
+	}
+
+	@PostMapping("updateUsu")
+	public boolean updateTableUsr(@RequestParam String correo, @RequestParam String pswd,  @RequestParam List<String> placas, @RequestParam String nombre, @RequestParam int token){
+		return usuarioService.updateTableUsr(correo, pswd, placas, nombre, token);
 	}
 
 }

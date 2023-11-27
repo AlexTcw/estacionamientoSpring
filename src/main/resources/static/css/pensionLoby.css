@@ -1,0 +1,242 @@
+body {
+    background-image: url("/css/bienvenida.jpg");
+    background-size: cover;
+    font-family: 'Arial', sans-serif;
+    font-stretch: extra-condensed;
+}
+
+
+.titulo-bienvenida, .titulo-usuario {
+    display: inline-block;
+    padding-left: 20px;
+    font-size: 18px;
+}
+
+
+.container {
+    text-align: left;
+    margin: 0;
+    align-items: center;
+}
+
+.bienvenida-body {
+    margin-top: 1%;
+    margin-left: 10%;
+    display: inline-block;
+    color: #fff;
+    padding: 40px;
+    vertical-align: top;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    /* Alinea la parte superior de los elementos */
+    box-sizing: border-box;
+    background-color: rgba(219, 133, 52,0.7);
+    width: 50rem;
+    height: 35rem;
+    /* Incluyevscode-file://vscode-app/c:/Users/tedga/AppData/Local/Programs/Microsoft%20VS%20Code/resources/app/out/vs/code/electron-sandbox/workbench/workbench.html el padding y border en el ancho */
+}
+
+.pago-Body {
+    display: inline-block;
+    margin-top: 1%;
+    padding: 40px;
+    vertical-align: top;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    /*background-color: #ffffff;*/
+    background-color: rgba(255, 255, 255, 0.6);
+    box-sizing: border-box;
+    width: 20rem;
+    height: 35rem;
+    /* Incluye el padding y border en el ancho */
+}
+
+button {
+    border-radius: 10px;
+    border: none;
+    background-color: rgb(62, 83, 104);
+    color: #fff;
+    padding: 10px;
+    font-size: 24px;
+    font-size: 16px;
+}
+
+.pensioncontainer button {
+    margin-left: 30px;
+    margin-top: 10px;
+    width: 250px;
+    height: 50px;
+    border-radius: 10px;
+    border: none;
+    background-color: rgb(62, 83, 104);
+    color: #fff;
+    padding: 10px;
+    font-size: 24px;
+    font-size: 16px;
+
+}
+
+.fechaEntrada,
+.horaEntrada,
+.tiempoUso {
+    display: block;
+    box-shadow: -10px 10px 10px rgba(63, 62, 62, 0.5);
+    background-color: #fff;
+    color: #111;
+    padding-left: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    height: 65px;
+
+}
+
+.fechaEntrada,
+.horaEntrada,
+.tiempoUso h2 {
+    font-size: 12px;
+
+}
+
+
+.fechaEntrada p,
+.horaEntrada p,
+.tiempoUso p,
+.iva p {
+    text-align: right;
+    padding-right: 10%;
+    font-size: 20px;
+}
+
+.subtotal,
+.iva,
+.total {
+    box-shadow: -10px 10px 10px rgba(63, 62, 62, 0.2);
+    background-color: #111;
+    border-radius: 10px;
+    color: #fff;
+    padding: 5px;
+    padding-left: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.subtotal p,
+.total p {
+    text-align: right;
+    padding-right: 10%;
+    font-size: 20px;
+}
+
+a {
+    color: #fff;
+    font-size: 24px;
+}
+
+
+#comeBackButton {
+    margin-left: 11%;
+    cursor: pointer;
+}
+
+#comeBackButton:hover {
+    text-decoration: underline;
+}
+
+#addButton{
+    margin-top:  10px;
+}
+
+#continueButton,#enviarButton,#addButton {
+    cursor: pointer;
+}
+
+#continueButton:hover,#addButton:hover, #enviarButton {
+    background-color: rgb(85, 100, 114);
+    ;
+}
+
+.pensioncontainer {
+    font-size: 20px;
+    background-color: #fff;
+    margin-left: 5%;
+    /* Centrar horizontalmente */
+    margin-top: 10px;
+    width: 600px;
+    border-radius: 15px;
+    padding: 10px;
+    padding-left: 20px;
+    display: none;
+    /* Hacer invisible inicialmente */
+    position: absolute;
+    /* Posición absoluta para que se pueda superponer a otros elementos */
+    top: 50%;
+    /* Centrar verticalmente */
+    left: 50%;
+    /* Centrar horizontalmente */
+    transform: translate(-50%, -50%);
+    /* Ajustar para centrar correctamente */
+    z-index: 9999;
+    /* Valor alto para estar encima de otros elementos */
+}
+
+.pensioncontainerMargin {
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 15px;
+    margin-right: 2%;
+}
+
+.placas {
+    display: block;
+    background-color: #fff;
+    color: #111;
+    border-radius: 10px;
+    padding: 10px;
+    overflow: hidden; /* Oculta el desbordamiento horizontal y vertical */
+}
+
+.placas table {
+    width: 100%; /* Asegura que la tabla ocupe el 100% del ancho del contenedor padre */
+    border-collapse: collapse; /* Fusiona los bordes de las celdas */
+}
+
+.placas tbody {
+    display: block;
+    max-height: 80px; /* Establece la altura máxima para mostrar solo dos filas */
+    overflow-y: auto; /* Permite desplazamiento vertical cuando hay más de dos filas */
+}
+
+.placas td {
+    border-radius: 5px;
+    padding: 8px; /* Ajusta el relleno para separar las celdas del borde */
+    width: 14%; /* Divide el ancho en dos columnas */
+}
+
+/* Estilo para las celdas pares */
+.placas tr:nth-child(even) td {
+    background-color: #fff;
+    color: #000;
+}
+
+/* Estilo para las celdas impares */
+.placas tr:nth-child(odd) td {
+    background-color: #111;
+    color: #fff;
+}
+
+
+
+.newPLaca{
+    display: none;
+    position: absolute;
+    margin-left: 45%;
+    top: 85%;
+    z-index: 100%;
+}
+
+.newPLaca input {
+    border-radius: 10px;
+    padding: 10px;    
+}
+

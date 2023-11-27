@@ -40,6 +40,8 @@ body {
     align-items: center;
     min-height: 100vh;
     background: #111;
+    padding-left: 200px;
+    padding-right: 200px;
   }
   .scan {
     position: relative;

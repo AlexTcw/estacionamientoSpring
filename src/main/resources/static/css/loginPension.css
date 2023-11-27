@@ -1,5 +1,4 @@
 body {
-    margin: 0;
     font-family: 'Arial', sans-serif;
     font-stretch: extra-condensed;
     color: #fff;
@@ -8,27 +7,37 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 22px;
-    height: 100vh; /* Ajusta la altura según tus necesidades */
+    font-size: 10px;
+    margin-top: 20px;
 }
 
 .container {
     display: flex;
 }
 
-.signup,.login {
+.signup, label {
+    font-size: 20px;
+}
+
+.signup, h1 {
+    font-size: 20px;
+}
+
+
+.signup {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: left;
-    background-color: rgba(100, 120, 140, 0.8);
+    background-color: rgba(219, 133, 52,0.7);
     border-radius: 15px;
     width: 40rem;
-    height: 25rem;
+    height: 27rem;
     margin: 0 10px; /* Ajusta el espacio entre los elementos según tus necesidades */
     margin-top: 20px;
-    padding: 10px;
+    padding: 5px;
+    padding-top: 30px;
 }
 
 .info {
@@ -36,17 +45,17 @@ body {
     flex-direction: column;
     text-align: left;
     align-items: center;    
-    background-color: rgba(100, 120, 140, 0.8);
+    background-color: rgba(219, 133, 52,0.7);
     width: 40rem;
-    height: 52rem;
-    margin: 0 10px; /* Ajusta el espacio entre los elementos según tus necesidades */
+    height: 34rem;
+    margin: 0 10px 0 10px; /* Ajusta el espacio entre los elementos según tus necesidades */
     padding: 20px;
     font-size: 40px;
 }
 
 .tab-content input{
     width: 35rem;
-    height: 30px;
+    height: 25px;
 }
 
 input {
@@ -54,7 +63,7 @@ input {
     border-radius: 5px;
     background-color: rgba(37, 69, 100, 0.8);
     color: #fff;
-    font-size: 24px;
+    font-size: 18px;
 }
 
 button {
@@ -64,14 +73,14 @@ button {
     padding: 20px;
     margin-top: 20px;
     margin-bottom: 40px;
-    font-size: 20px;
+    font-size: 18px;
   }
 
 img{
     margin-top: 20px;
-    width: 300px;
+    width: 200px;
 }
 
 #costo{
-    font-size: 60px;
+    font-size: 40px;
 }

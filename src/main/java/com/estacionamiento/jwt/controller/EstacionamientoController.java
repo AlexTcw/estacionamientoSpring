@@ -2,6 +2,7 @@ package com.estacionamiento.jwt.controller;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.estacionamiento.jwt.Dao.Estacionamiento.EstacionamientoDao;
+import com.estacionamiento.jwt.model.Estacionamiento;
 import com.estacionamiento.jwt.model.DTO.BienvenidaDTO;
 import com.estacionamiento.jwt.model.DTO.IngresoDTO;
 import com.estacionamiento.jwt.model.DTO.PagoDto;
@@ -26,6 +29,9 @@ public class EstacionamientoController {
 	
 	@Autowired
 	EstacionamientoService estacionamientoService;
+
+	@Autowired
+	EstacionamientoDao estacionamientoDao;
 
 	/* "http://192.168.1.77:8080/api/fingerprint/generateToken" */
 
@@ -63,7 +69,6 @@ public class EstacionamientoController {
 	
 	@GetMapping("/try-pay")
 	public PagoDto tryPay(@RequestParam("token")int token) {
-		token = registryService.getLastTokenRegistry();
 		PagoDto pago = estacionamientoService.getpago(token);
 		return pago;
 		}
@@ -102,4 +107,16 @@ public class EstacionamientoController {
 
 		return bienvenidaDTO;
 	}
+
+	@GetMapping("/getAllEstacionamientos")
+	public List<Estacionamiento> findAllEstacionamientos(){
+		return estacionamientoDao.findAllEstacionamientos();
+	}
+
+	@GetMapping("deleteEstacionamientoById")
+	public void deleteEstacionamientoById(@RequestParam Long id){
+		estacionamientoDao.deleteEstacionamientoById(id);
+	}
+
+	
 }

@@ -16,8 +16,6 @@ import com.estacionamiento.jwt.model.Usuario;
 import com.estacionamiento.jwt.model.DTO.IngresoDTO;
 import com.estacionamiento.jwt.model.DTO.PagoDto;
 import com.estacionamiento.jwt.model.DTO.ReciboDTO;
-import com.estacionamiento.jwt.model.DTO.TiketDTO;
-import com.estacionamiento.jwt.service.Usuario.UsuarioService;
 
 @Service
 public class EstacionamientoServiceImp implements EstacionamientoService {
@@ -178,6 +176,7 @@ public class EstacionamientoServiceImp implements EstacionamientoService {
 	@Override
 	public LocalDateTime getEstacionamientobyToken(int token) {
 		Estacionamiento est = estDao.findEstacionamientoByTokenIngreso(token);
+
 		LocalDateTime Ingreso = est.getIngresoFec();
 		return Ingreso;
 	}
@@ -187,6 +186,7 @@ public class EstacionamientoServiceImp implements EstacionamientoService {
 		Estacionamiento est = estDao.findEstacionamientoByTokenIngreso(token);
 		Const costoPH = new Const();
 		PagoDto pago = new PagoDto();
+
 		/* recupera la entrada y establece la salida del usuario */
 		LocalDateTime ingreso = est.getIngresoFec();
 		LocalDateTime salida = LocalDateTime.now();
@@ -199,41 +199,38 @@ public class EstacionamientoServiceImp implements EstacionamientoService {
 
 		double totalHoras;
 
-		if (sec >= 0) {
-			// Si los minutos son múltiplos de 60 o hay segundos, redondear hacia arriba
-			totalHoras = Math.ceil((double) sec / 3600) * costoPH.costoPorHora;
+		Usuario usuario = usrDao.findUsuarioByToken(token);
+		if (usuario.getEdoUsu() == 1L) {
+			if (sec >= 0 && sec > 60) {
+				// Si los minutos son múltiplos de 60 o hay segundos, redondear hacia arriba
+				totalHoras = Math.ceil((double) sec / 3600) * (costoPH.costoPorHora - 17);
+			} else {
+				// Si los minutos son exactos, simplemente usar las horas
+				totalHoras = hrs * (costoPH.costoPorHora - 17);
+			}
+			pago.setSubTotal(totalHoras);
+			pago.setTotal(Math.ceil(totalHoras * 1.16));
 		} else {
-			// Si los minutos son exactos, simplemente usar las horas
-			totalHoras = hrs * costoPH.costoPorHora;
+			if (sec >= 0 && sec > 60) {
+				// Si los minutos son múltiplos de 60 o hay segundos, redondear hacia arriba
+				totalHoras = Math.ceil((double) sec / 3600) * costoPH.costoPorHora;
+			} else {
+				// Si los minutos son exactos, simplemente usar las horas
+				totalHoras = hrs * costoPH.costoPorHora;
+			}
+			pago.setSubTotal(totalHoras);
+			pago.setTotal(Math.ceil(totalHoras * 1.16));
 		}
-
-		pago.setSubTotal(totalHoras);
-		pago.setTotal(Math.ceil(totalHoras * 1.16));
 		pago.setFechaEntradaString(ingreso.toString());
 		pago.setFechaSalida(salida.toString());
 		pago.setFechaCompleta(salida);
 
 		return pago;
 	}
-	
+
 	@Override
-	public PagoDto gerReciboPagado(PagoDto pago, int token) {
-		Estacionamiento est = estDao.findEstacionamientoByTokenIngreso(token);
-		PagoDto pagoRealizado = pago;
-
-		est.setEdoPago(true);
-		est.setSalidaFec(pago.getFechaCompleta());
-		est.setTotal(pago.getTotal());
-
-		estDao.CreateOrUpdateEstacionamiento(est);
-
-		return pagoRealizado;
-
-	}
-
 	public boolean cambiaEdoPago(int token, long edoUsu) {
 		Estacionamiento est = estDao.findEstacionamientoByTokenIngreso(token);
-		Const costoPH = new Const();
 
 		if (edoUsu != 1) {
 			return false;
@@ -242,6 +239,46 @@ public class EstacionamientoServiceImp implements EstacionamientoService {
 		est.setEdoPago(true);
 		estDao.CreateOrUpdateEstacionamiento(est);
 		return true;
+	}
+
+	@Override
+	public boolean changeToHistorial(int token) {
+		Estacionamiento estacionamiento = estDao.findEstacionamientoByTokenIngreso(token);
+
+		if (estacionamiento != null) {
+			Historial historial = new Historial();
+			historial.setCveEst(estacionamiento.getCveEst());
+			historial.setIngresoFec(estacionamiento.getIngresoFec());
+			historial.setSalidaFec(estacionamiento.getSalidaFec());
+
+			// Calcular la diferencia en tiempo
+			Duration duration = Duration.between(estacionamiento.getIngresoFec(), estacionamiento.getSalidaFec());
+
+			// Obtener el tiempo de uso en horas como un double
+			double tiempoDeUsoEnHoras = (double) duration.toMinutes() / 60.0;
+			historial.setTiempoDeUso(tiempoDeUsoEnHoras);
+
+			historial.setTotal(estacionamiento.getTotal());
+
+			hstDao.saveOrUpdateHistorial(historial);
+			return true;
+		} else {
+			return false; // O manejar de otra manera si el estacionamiento no existe
+		}
+	}
+
+	@Override
+	public Estacionamiento updEstacionamiento(double total, LocalDateTime salida, int token) {
+		Estacionamiento estacionamiento = estDao.findEstacionamientoByTokenIngreso(token);
+		estacionamiento.setSalidaFec(salida);
+		estacionamiento.setTotal(total);
+		estDao.CreateOrUpdateEstacionamiento(estacionamiento);
+		return estacionamiento;
+	}
+
+	@Override
+	public void deleteEstacionamientoByToken(int token) {
+		estDao.deleteEstacionamientoByToken(token);
 	}
 
 }

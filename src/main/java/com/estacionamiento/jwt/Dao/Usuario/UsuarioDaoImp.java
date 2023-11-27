@@ -1,5 +1,7 @@
 package com.estacionamiento.jwt.Dao.Usuario;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -42,4 +44,19 @@ public class UsuarioDaoImp implements UsuarioDao {
 	public Boolean existUsuarioByCorreoAndContraseñaAndTokenEst(String correo, String pass, int token) {
 		return usrRepository.existsByCorreoAndContraseñaAndTokenEst(correo, pass, token);
 	}
+
+	@Override
+	public void deleteUsuarioByTokenEstAndEdoUsu(int token, Long edoUsu){
+		usrRepository.deleteUsuarioByTokenEstAndEdoUsu(token, edoUsu);
+	}
+
+	@Override
+	public List<Usuario> findUsuariosByToken(int token){
+		return usrRepository.findUsuariosByTokenEst(token);
+	}
+
+	@Override
+	public List<Usuario> getAllUsu(){
+		return usrRepository.findAll();
+	}	
 }

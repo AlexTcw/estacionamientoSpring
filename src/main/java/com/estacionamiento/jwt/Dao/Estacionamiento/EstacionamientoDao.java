@@ -1,5 +1,7 @@
 package com.estacionamiento.jwt.Dao.Estacionamiento;
 
+import java.util.List;
+
 import com.estacionamiento.jwt.model.Estacionamiento;
 
 public interface EstacionamientoDao {
@@ -16,5 +18,9 @@ public interface EstacionamientoDao {
 	Long findLastId();
 
 	Long findLastToken();
+
+	List<Estacionamiento> findAllEstacionamientos();
+
+	void deleteEstacionamientoById(Long id);
 
 }

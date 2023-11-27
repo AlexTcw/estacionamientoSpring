@@ -5,16 +5,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fecha de Entrada</title>
-  <script src="/js/pago.js" defer></script>
-  <link rel="stylesheet" href="/css/pago.css">
+  <script src="/js/pensionLobby.js" defer></script>
+  <link rel="stylesheet" href="/css/pensionLoby.css">
 </head>
 
 <body>
-  <div class="overlay" id="overlay"></div>
+  <div class="newPLaca" id="newPlaca">
+    <input type="text" name="" id="placaInput" placeholder="TKY-28-73">
+    <button id="enviarButton">ENVIAR</button>
+  </div>
   <div class="container">
     <div class="bienvenida-body">
       <div class="mensaje">
-        <h1>BIENVENIDO DE VUELTA</h1>
+        <h1 class="titulo-bienvenida" id="bienvenidaMSJ">BIENVENIDO DE VUELTA</h1>
+        <h2 class="titulo-usuario" id="Usuario"></h2>        
         <div class="fechaEntrada">
           <h2>FECHA DE ENTRADA</h2>
           <p id="fechaDeEntrada"></p>
@@ -28,12 +32,15 @@
           <div class="cronometro">
             <p id="tiempoTranscurrido"></p>
           </div>
-
         </div>
+        <div class="placas">
+          <table>
+            <th>Placas de asociadas para esta cuenta: </th>
+            <tbody id="bodyPLacas"></tbody>
+          </table>
+        </div>
+        <button id="addButton">AÑADIR NUEVA PLACA DE AUTO</button>
       </div>
-      <a id="comeBackButton">
-        Regresar
-      </a>
     </div>
     <div class="pago-Body">
       <div class="subtotal">
@@ -48,21 +55,14 @@
         <h3>TOTAL</h3>
         <p id="total"></p>
       </div>
-      <button id="popupbutton">CONTINUAR CON EL PAGO</button>
-    </div>
-    <div class="pensioncontainer" id="pensionContainer">
-      <div class="pensioncontainerMargin">
-        <p><strong>¿Desea continuar usando el estacionamiento o estacionar mas de un auto a la vez? registrese como
-          pensionado</strong></p>
-      </div>      
-    <a href="/loginPension.html">
-      <button>REGISTRARSE COMO PENSIONADO</button>
-    </a>
-    <a href="/paymentMethod.html">
-      <button>NO GRACIAS</button>
-    </a>
+      <a href="paymentMethod.html">
+        <button id="continueButton">CONTINUAR CON EL PAGO</button>
+      </a>
     </div>
   </div>
+  <a id="comeBackButton">
+    Regresar
+  </a>
 
 </body>
 

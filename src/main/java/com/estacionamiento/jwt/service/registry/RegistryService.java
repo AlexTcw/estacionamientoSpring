@@ -15,5 +15,7 @@ public interface RegistryService {
 
 	int getLastTokenRegistry();
 
+	Boolean setRegistryEdo(int token, int edo);
+
 
 }

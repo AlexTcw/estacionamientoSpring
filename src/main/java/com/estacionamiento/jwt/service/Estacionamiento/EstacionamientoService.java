@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
 
+import com.estacionamiento.jwt.model.Estacionamiento;
 import com.estacionamiento.jwt.model.DTO.IngresoDTO;
 import com.estacionamiento.jwt.model.DTO.PagoDto;
 import com.estacionamiento.jwt.model.DTO.ReciboDTO;
@@ -29,6 +30,12 @@ public interface EstacionamientoService {
 
 	PagoDto getpago(int token);
 
-	PagoDto gerReciboPagado(PagoDto pago, int token);
+	boolean changeToHistorial(int token);
+
+	boolean cambiaEdoPago(int token,long edoUsu);
+
+	Estacionamiento updEstacionamiento(double total, LocalDateTime salida, int token);
+
+	void deleteEstacionamientoByToken(int token);
 
 }

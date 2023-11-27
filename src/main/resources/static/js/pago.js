@@ -100,3 +100,10 @@ document.getElementById('comeBackButton').addEventListener('click', function () 
   redirectToIndex();
 });
 
+document.getElementById("popupbutton").addEventListener("click", function() {
+  var pensionContainer = document.getElementById("pensionContainer");
+  var overlay = document.getElementById("overlay");
+
+  pensionContainer.style.display = "block"; // Muestra el contenedor
+  overlay.style.display = "block"; // Muestra el fondo oscuro
+});

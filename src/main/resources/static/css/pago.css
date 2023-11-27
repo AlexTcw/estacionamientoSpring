@@ -1,3 +1,14 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9); /* Fondo oscuro con opacidad */
+    display: none; /* Inicialmente oculto */
+    z-index: 9998; /* Z-index menor que el contenedor pensioncontainer */
+  }
+
 body{
     background-image: url("/css/bienvenida.jpg");
     background-size: cover;
@@ -16,7 +27,7 @@ body{
     align-items: center;
 }
 .bienvenida-body {
-    margin-top: 10%;
+    margin-top: 1%;
     margin-left: 10%;
     display: inline-block;
     color: #fff;
@@ -29,12 +40,12 @@ body{
     background-color: #111;
     width: 50rem;
     height: 35rem;
-    /* Incluye el padding y border en el ancho */
+    /* Incluyevscode-file://vscode-app/c:/Users/tedga/AppData/Local/Programs/Microsoft%20VS%20Code/resources/app/out/vs/code/electron-sandbox/workbench/workbench.html el padding y border en el ancho */
 }
 
 .pago-Body {
     display: inline-block;
-    margin-top: 10%;
+    margin-top: 1%;
     padding: 40px;
     vertical-align: top;
     border-top-right-radius:20px ;
@@ -42,20 +53,35 @@ body{
     /*background-color: #ffffff;*/
     background-color: rgba(255, 255, 255,0.6);
     box-sizing: border-box;
-    width: 40rem;
+    width: 20rem;
     height: 35rem;
     /* Incluye el padding y border en el ancho */
 }
 
-.pago-Body button, .pensioncontainer button{
+.pago-Body button{
     border-radius: 10px;
     border: none;
     background-color: rgb(62, 83, 104);
     color: #fff;
     padding: 10px;
     font-size: 24px;
-    margin-left: 14rem;
+    font-size: 16px;
 }
+
+.pensioncontainer button {
+    margin-left: 30px;
+    margin-top: 10px;
+    width: 250px;
+    height: 50px;
+    border-radius: 10px;
+    border: none;
+    background-color: rgb(62, 83, 104);
+    color: #fff;
+    padding: 10px;
+    font-size: 24px;
+    font-size: 16px;
+    
+  }
 
 .fechaEntrada, .horaEntrada, .tiempoUso{
     box-shadow: -10px 10px 10px rgba(63, 62, 62, 0.5);
@@ -98,13 +124,26 @@ a {
     font-size: 24px;
 }
 
-.pensioncontainer{
-    font-size: 20px;
-    background-color: rgba(255, 255, 255,0.6);
-    margin-left: 52%; 
+.pensioncontainer {
+    font-size: 20px;        
+    background-color: #fff;
+    margin-left: 5%; /* Centrar horizontalmente */
     margin-top: 10px;
     width: 600px;
     border-radius: 15px;
     padding: 10px;
     padding-left: 20px;
+    display: none; /* Hacer invisible inicialmente */
+    position: absolute; /* Posición absoluta para que se pueda superponer a otros elementos */
+    top: 50%; /* Centrar verticalmente */
+    left: 50%; /* Centrar horizontalmente */
+    transform: translate(-50%, -50%); /* Ajustar para centrar correctamente */
+    z-index: 9999; /* Valor alto para estar encima de otros elementos */
+}
+
+.pensioncontainerMargin{
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 15px;
+    margin-right: 2%;
 }
