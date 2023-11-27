@@ -30,7 +30,7 @@ public interface EstacionamientoService {
 
 	PagoDto getpago(int token);
 
-	boolean changeToHistorial(int token);
+	boolean changeToHistorial(int token, double timepoUso,double total);
 
 	boolean cambiaEdoPago(int token,long edoUsu);
 

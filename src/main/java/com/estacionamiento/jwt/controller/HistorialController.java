@@ -33,7 +33,7 @@ public class HistorialController {
     }
     
 @GetMapping("/transferHist")
-    public ResponseEntity<String> transferHistorial(@RequestParam int token) {
+    public ResponseEntity<String> transferHistorial(@RequestParam int token, @RequestParam Double tiempoUso, @RequestParam Double total) {
         try {
             Long edoUsu = 1L;
             LocalDateTime fechaHoraActuales = LocalDateTime.now();
@@ -44,7 +44,7 @@ public class HistorialController {
                 Estacionamiento estacionamiento = estacionamientoService.updEstacionamiento(token, fechaHoraActuales, token);
 
                 if (estacionamiento != null) {
-                    Boolean changeToHistorial = estacionamientoService.changeToHistorial(token);
+                    Boolean changeToHistorial = estacionamientoService.changeToHistorial(token,tiempoUso,total);
 
                     if (changeToHistorial) {
                         estacionamientoService.deleteEstacionamientoByToken(token);

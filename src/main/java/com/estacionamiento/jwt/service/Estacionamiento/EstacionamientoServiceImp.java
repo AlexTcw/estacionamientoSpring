@@ -143,7 +143,6 @@ public class EstacionamientoServiceImp implements EstacionamientoService {
 	@Override
 	public IngresoDTO controlEntrada(int token) {
 		LocalDateTime ingreso = LocalDateTime.now();
-		Const Const = new Const();
 		IngresoDTO recibo = new IngresoDTO();
 
 		/* maxID */
@@ -201,7 +200,7 @@ public class EstacionamientoServiceImp implements EstacionamientoService {
 
 		Usuario usuario = usrDao.findUsuarioByToken(token);
 		if (usuario.getEdoUsu() == 1L) {
-			if (sec >= 0 && sec > 60) {
+			if (sec >= 0 && sec < 3600) {
 				// Si los minutos son múltiplos de 60 o hay segundos, redondear hacia arriba
 				totalHoras = Math.ceil((double) sec / 3600) * (costoPH.costoPorHora - 17);
 			} else {
@@ -211,7 +210,7 @@ public class EstacionamientoServiceImp implements EstacionamientoService {
 			pago.setSubTotal(totalHoras);
 			pago.setTotal(Math.ceil(totalHoras * 1.16));
 		} else {
-			if (sec >= 0 && sec > 60) {
+			if (sec >= 0 && sec < 3600) {
 				// Si los minutos son múltiplos de 60 o hay segundos, redondear hacia arriba
 				totalHoras = Math.ceil((double) sec / 3600) * costoPH.costoPorHora;
 			} else {
@@ -242,7 +241,7 @@ public class EstacionamientoServiceImp implements EstacionamientoService {
 	}
 
 	@Override
-	public boolean changeToHistorial(int token) {
+	public boolean changeToHistorial(int token, double timepoUso,double total) {
 		Estacionamiento estacionamiento = estDao.findEstacionamientoByTokenIngreso(token);
 
 		if (estacionamiento != null) {
@@ -251,14 +250,9 @@ public class EstacionamientoServiceImp implements EstacionamientoService {
 			historial.setIngresoFec(estacionamiento.getIngresoFec());
 			historial.setSalidaFec(estacionamiento.getSalidaFec());
 
-			// Calcular la diferencia en tiempo
-			Duration duration = Duration.between(estacionamiento.getIngresoFec(), estacionamiento.getSalidaFec());
+			historial.setTiempoDeUso(timepoUso);
 
-			// Obtener el tiempo de uso en horas como un double
-			double tiempoDeUsoEnHoras = (double) duration.toMinutes() / 60.0;
-			historial.setTiempoDeUso(tiempoDeUsoEnHoras);
-
-			historial.setTotal(estacionamiento.getTotal());
+			historial.setTotal(total);
 
 			hstDao.saveOrUpdateHistorial(historial);
 			return true;

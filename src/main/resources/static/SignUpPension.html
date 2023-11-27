@@ -24,26 +24,26 @@
                     <label>
                         Nombre(s)<span class="req">*</span><br>
                     </label>
-                    <input id="nombre" type="text" required autocomplete="off" />
+                    <input id="nombre" type="text" required autocomplete="name" placeholder="Nombre Apellido" />
                 </div>
 
                 <div class="field-wrap">
                     <label>
                         Placa del auto<span class="req">*</span><br>
                     </label>
-                    <input id="placa" type="text" required autocomplete="off" />
+                    <input id="placa" type="text" required autocomplete="new-placa" placeholder="PRA-45-44"/>
                 </div>
             </div>
 
             <div class="field-wrap">
                 <label>Email<span class="req">*</span><br></label>
-                <input type="email" id="emailSignup" required autocomplete="off" />
-            </div>
+                <input type="email" id="emailSignup" required autocomplete="email" placeholder="nombre@usuario.com"/>
+            </div>            
 
             <div class="field-wrap">
                 <label>Nueva Contraseña<span class="req">*</span><br></label>
-                <input type="password" id="passwordSignup" required autocomplete="off" />
-            </div>
+                <input type="password" id="passwordSignup" required autocomplete="new-password" placeholder="******"/>
+            </div>            
 
             <button id="signup-button" type="submit" class="button button-block">Registrarse</button>
         </div>
