@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.estacionamiento.jwt.Dao.Usuario.UsuarioDao;
 import com.estacionamiento.jwt.model.Usuario;
 import com.estacionamiento.jwt.model.DTO.UsrInfoDto;
+import com.estacionamiento.jwt.service.Estacionamiento.EstacionamientoService;
 import com.estacionamiento.jwt.service.Usuario.UsuarioService;
+import com.estacionamiento.jwt.service.registry.RegistryService;
 
 import jakarta.persistence.NonUniqueResultException;
 
@@ -28,6 +31,45 @@ public class UsuarioController {
 
 	@Autowired
 	UsuarioDao usuarioDao;
+
+	@Autowired
+	RegistryService registryService;
+
+	@Autowired
+	EstacionamientoService estacionamientoService;
+
+	@PostMapping("/createUsuPension")
+	public ResponseEntity<String> createNewPensionUserWithToken(@RequestParam String correo, @RequestParam String pswd,
+			@RequestParam int token, @RequestParam String placa, @RequestParam String nombre) {
+
+		Boolean existPensionado = usuarioDao.existUsuarioByToken(token);
+		Boolean existToken = estacionamientoService.existToken(token);
+
+		if (existToken == false) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body("No existe el token " + token + " debe haber un token para el usuario");
+		}
+
+		if (existPensionado == false) {
+			Usuario usuario = usuarioService.createNewPensionUsuario(correo, pswd, token, placa, nombre);
+			if (usuario != null) {
+				registryService.setRegistry2proccess();
+				return ResponseEntity.ok("Usuario creado para el token: " + token);
+			}
+			return ResponseEntity.status(HttpStatus.CONFLICT)
+					.body("No se pudo crear el usuario con el token: " + token);
+		}
+		return ResponseEntity.status(HttpStatus.CONFLICT).body("Ya existe un Pensionado con token: " + token);
+	}
+
+	@PostMapping("/getPensionadoInfoByToken")
+	public ResponseEntity<UsrInfoDto> getUsrPensionadoInfoByToken(@RequestParam("token") int token) {
+		UsrInfoDto usr = usuarioService.getUsrInfo(token);
+		if (usr != null) {
+			return ResponseEntity.ok(usr);
+		}
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(usr);
+	}
 
 	@GetMapping("/existUsu")
 	public ResponseEntity<String> recoverUsu(@RequestParam String correo, @RequestParam String pswd,
@@ -92,7 +134,7 @@ public class UsuarioController {
 					}
 				}
 
-				return ResponseEntity.ok("usuario creado, redirigiendo");
+				return ResponseEntity.ok("usuario creado");
 			}
 			return ResponseEntity.badRequest().body("Usuario no válido");
 		} catch (NonUniqueResultException e) {
@@ -105,9 +147,7 @@ public class UsuarioController {
 
 	@GetMapping("/getUsrTabl")
 	public List<String> getTable(@RequestParam int token) {
-		List<String> tabla = new ArrayList();
-		tabla = usuarioService.getTablaPLacas(token);
-
+		List<String> tabla = usuarioService.getTablaPLacas(token);
 		return tabla;
 	}
 
@@ -135,17 +175,18 @@ public class UsuarioController {
 	}
 
 	@GetMapping("/getAllUsu")
-	public List<Usuario> getAllUsu(){
+	public List<Usuario> getAllUsu() {
 		return usuarioService.getAllUsu();
 	}
 
 	@GetMapping("/deleteUsuById")
-	public void deleteUserByCVE(@RequestParam Long cve){
+	public void deleteUserByCVE(@RequestParam Long cve) {
 		usuarioDao.deleteUsuarioByCveUsu(cve);
 	}
 
 	@PostMapping("updateUsu")
-	public boolean updateTableUsr(@RequestParam String correo, @RequestParam String pswd,  @RequestParam List<String> placas, @RequestParam String nombre, @RequestParam int token){
+	public boolean updateTableUsr(@RequestParam String correo, @RequestParam String pswd,
+			@RequestParam List<String> placas, @RequestParam String nombre, @RequestParam int token) {
 		return usuarioService.updateTableUsr(correo, pswd, placas, nombre, token);
 	}
 

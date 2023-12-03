@@ -10,7 +10,9 @@ import com.estacionamiento.jwt.model.DTO.UsrInfoDto;
 @Service
 public interface UsuarioService {
 
-	int getUsuarioTokenByCorreoAndPSW(String correo,String contraseña);
+	Usuario createNewPensionUsuario(String correo, String pswd, int token, String placa, String nombre);
+
+	int getUsuarioTokenByCorreoAndPSW(String correo, String contraseña);
 
 	Boolean findUsuarioByCorreoUsu(String corString);
 
@@ -20,7 +22,7 @@ public interface UsuarioService {
 
 	Boolean existUsuario(String correo, String pass, int token);
 
-	List<String> getTablaPLacas (int token);
+	List<String> getTablaPLacas(int token);
 
 	public UsrInfoDto getUsrInfo(int token);
 

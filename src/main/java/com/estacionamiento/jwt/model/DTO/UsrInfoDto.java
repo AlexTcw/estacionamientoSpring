@@ -7,6 +7,7 @@ public class UsrInfoDto {
     String nombreUsu;
     String correoUsu;
     List<String> placas;
+    int token;
 
     public String getNombreUsu() {
         return nombreUsu;
@@ -30,6 +31,14 @@ public class UsrInfoDto {
 
     public void setPlacas(List<String> placas) {
         this.placas = placas;
+    }
+
+    public int getToken() {
+        return token;
+    }
+
+    public void setToken(int token) {
+        this.token = token;
     }
 
 }

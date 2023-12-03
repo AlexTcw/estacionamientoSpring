@@ -2,6 +2,8 @@ package com.estacionamiento.jwt.service.Estacionamiento;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +16,7 @@ import com.estacionamiento.jwt.model.Estacionamiento;
 import com.estacionamiento.jwt.model.Historial;
 import com.estacionamiento.jwt.model.Usuario;
 import com.estacionamiento.jwt.model.DTO.IngresoDTO;
-import com.estacionamiento.jwt.model.DTO.PagoDto;
+import com.estacionamiento.jwt.model.DTO.PagoInfoDto;
 import com.estacionamiento.jwt.model.DTO.ReciboDTO;
 
 @Service
@@ -29,9 +31,47 @@ public class EstacionamientoServiceImp implements EstacionamientoService {
 	@Autowired
 	UsuarioDao usrDao;
 
+	private static final int SECONDS_IN_HOUR = 3600;
+
 	@Override
 	public Long getLastToken() {
 		return estDao.findLastToken();
+	}
+
+	// as608 function
+	@Override
+	public int generateNewToken() {
+		Long lastId = estDao.findLastId();
+		if (lastId != null) {
+			return lastId.intValue() + 1;
+		} else {
+			lastId = 1L;
+			return lastId.intValue();
+		}
+	}
+
+	// metodos especiales
+	// calcula el costo por usar el estacionamiento desde el primer segundo
+	private Double calculateCosto(LocalDateTime ingreso, LocalDateTime salida) {
+		Const costoPorHora = new Const();
+		Duration duration = Duration.between(ingreso, salida);
+
+		long horas = duration.toHours();
+		long segundos = duration.toSeconds();
+
+		if (segundos >= 0 && segundos < SECONDS_IN_HOUR) {
+			// Si la duración es menor a una hora, calcular el costo por minuto
+			return costoPorHora.costoPorHora;
+		} else {
+			// Si la duración es igual o mayor a una hora, calcular el costo por hora
+			return horas * costoPorHora.costoPorHora;
+		}
+	}
+
+	// calcula la diferencia entre hora salida y entrada
+	@Override
+	public Duration calculateDuration(LocalDateTime ingreso, LocalDateTime salida) {
+		return Duration.between(ingreso, salida);
 	}
 
 	/* valida si ya existe o no el token */
@@ -45,132 +85,129 @@ public class EstacionamientoServiceImp implements EstacionamientoService {
 		}
 	}
 
+	// Estacionamiento Path
+	/*
+	 * edoUsu
+	 * 0=generico
+	 * 1=pensionado
+	 * 2= admin
+	 */
+	// crear Registro en tabla Estacionamiento
 	@Override
-	public int generateNewToken() {
-		Long lastId = estDao.findLastId();
-		if (lastId != null) {
-			return lastId.intValue() + 1;
-		} else {
-			lastId = 1L;
-			return lastId.intValue();
-		}
-	}
-
-	@Override
-	public Boolean createUsu(Long edoUsu, int token) {
-
-		if (edoUsu != null && edoUsu == 1L) {
-			Usuario usuario = new Usuario();
-			usuario.setContraseña("11223344");
-			usuario.setEdoUsu(edoUsu);
-			usuario.setCorreo("generico@Usuario.com");
-			usuario.setTokenEst(token);
-			usuario.setEdoUsu(1L);
-
-			usrDao.createOrUpdateUsuario(usuario);
-
-			return true;
-		}
-		return false;
-	}
-
-	/* se accionara si el usuario ya existia y fue detectado por la huella */
-	@Override
-	public ReciboDTO generarReciboSalidaEstacionamiento(int token, Boolean edo, Long edoUsu) {
-
-		Const costoPH = new Const();
-		Usuario usr = usrDao.findUsuarioByToken(token);
-		Estacionamiento est = estDao.findEstacionamientoByTokenIngreso(token);
-
-		/* recupera la entrada y establece la salida del usuario */
-		LocalDateTime ingreso = est.getIngresoFec();
-		LocalDateTime salida = LocalDateTime.now();
-		est.setSalidaFec(salida);
-
-		/* calcula el costo por uso */
-		Duration duration = Duration.between(ingreso, salida);
-		long hrs = duration.toHours();
-		long mnts = duration.toMinutes();
-		long sec = duration.toSeconds();
-
-		double totalHoras;
-		double totalTiempo;
-
-		if (sec >= 0) {
-			// Si los minutos son múltiplos de 60 o hay segundos, redondear hacia arriba
-			totalTiempo = Math.ceil((double) sec / 60);
-			totalHoras = Math.ceil((double) sec / 60) * costoPH.costoPorHora;
-			System.out.println(totalTiempo);
-		} else {
-			// Si los minutos son exactos, simplemente usar las horas
-			totalTiempo = hrs;
-			totalHoras = hrs * costoPH.costoPorHora;
-		}
-
-		/* Verificamos si el usuario ya salio */
-		if (edo != null && edo == true) {
-			est.setTotal(totalHoras);
-			estDao.CreateOrUpdateEstacionamiento(est);
-			/* Generamos el recibo */
-			ReciboDTO recibo = new ReciboDTO();
-			Double TotalEst = est.getTotal();
-			// setCorreo
-			recibo.setCorreo(usr.getCorreo());
-			recibo.setTotalHoras(hrs);
-			recibo.setTotalMinutos(mnts);
-			recibo.setMensaje("Gracias Por su visita");
-			recibo.setTotalCosto(TotalEst);
-			/* guardamos los cambios a la entidad Historial */
-			Historial hst = new Historial();
-			hst.setIngresoFec(ingreso);
-			hst.setSalidaFec(salida);
-			hst.setTiempoDeUso(totalTiempo);
-			hst.setTotal(TotalEst);
-			hst.setCveEst(est.getCveEst());
-
-			hstDao.saveOrUpdateHistorial(hst);
-
-			/* Borramos de usuario despues del traslado */
-			estDao.deleteEstacionamientoByToken(token);
-
-			return recibo;
-		}
-
-		return null;
-
-	}
-
-	@Override
-	public IngresoDTO controlEntrada(int token) {
-		LocalDateTime ingreso = LocalDateTime.now();
-		IngresoDTO recibo = new IngresoDTO();
-
-		/* maxID */
+	public Boolean createNewEstacionamientoWithToken(int token) {
+		// Obtenemos la fecha de ingreso
+		LocalDateTime ingresoDateTime = LocalDateTime.now();
+		/* maxID mejorar la legibilidad de la tabla */
 		Long maxCveEst = estDao.maxID();
-
 		if (maxCveEst == null) {
 			maxCveEst = 0L;
 		}
-
-		/* Crear nuevo Estacionamiento */
-
 		Estacionamiento est = new Estacionamiento();
 		est.setTokenIngreso(token);
-		est.setIngresoFec(ingreso);
-		/* como jalo el correo y se lo establezco al Estacionamiento */
+		est.setIngresoFec(ingresoDateTime);
+		estDao.CreateOrUpdateEstacionamiento(est);
+		return true;
+	}
+
+	// Busca los datos para el front
+	@Override
+	public PagoInfoDto getPagoInfo(int token) {
+		Estacionamiento est = estDao.findEstacionamientoByTokenIngreso(token);
+		Usuario usuario = usrDao.findUsuarioByToken(token);
+
+		if (est == null) {
+			return null;
+		}
+
+		PagoInfoDto pagoInfo = new PagoInfoDto();
+
+		LocalDateTime ingreso = est.getIngresoFec();
+		LocalDateTime actual = LocalDateTime.now();
+
+		Double total = calculateCosto(ingreso, actual);
+		LocalTime horaEntrada = ingreso.toLocalTime();
+
+		if (usuario != null && usuario.getEdoUsu() == 1L) {
+			// Utilizar una constante para representar el estado activo del usuario
+			total *= 0.7;
+		}
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/y");
+
+		pagoInfo.setFecha(ingreso.format(formatter));
+		pagoInfo.setFechaEntrada(horaEntrada.toString());
+		pagoInfo.setFechaCompleta(ingreso);
+		pagoInfo.setTotal(total);
+		pagoInfo.setSubTotal(total * 0.84);
+
+		return pagoInfo;
+	}
+
+	// Establece los datos del usuario que quiere salir con el token
+	@Override
+	public Boolean setExitDataEstacionamientoWithToken(int token) {
+		Estacionamiento est = estDao.findEstacionamientoByTokenIngreso(token);
+
+		if (est == null) {
+			// Estacionamiento no encontrado, considerar lanzar una excepción o devolver un
+			// resultado específico
+			return false;
+		}
+
+		LocalDateTime fechaIngreso = est.getIngresoFec();
+		LocalDateTime fechaSalida = LocalDateTime.now();
+		Double total = calculateCosto(fechaIngreso, fechaSalida);
+
+		est.setSalidaFec(fechaSalida);
+		est.setTotal(total);
+		est.setEdoPago(true);
 
 		estDao.CreateOrUpdateEstacionamiento(est);
 
-		/* creamos al usuario generico */
-		Usuario usr = new Usuario();
-		usr.setTokenEst(token);
-		usrDao.createOrUpdateUsuario(usr);
-
-		recibo.setIngreso(ingreso);
-		recibo.setMensaje("bienvenido al estacionamiento");
-
-		return recibo;
+		return true;
 	}
+
+	// se borrara una vez que se registren los datos en salida
+	@Override
+	public void deleteEstacionamientoByToken(int token) {
+		estDao.deleteEstacionamientoByToken(token);
+	}
+
+	// Buscar estacionamiento de ser necesario
+	@Override
+	public Estacionamiento getEstacionamientoByToken(int token) {
+		return estDao.findEstacionamientoByTokenIngreso(token);
+	}
+
+	// Pensionado Path
+	// Establece los datos del estacionamiento con costo reducido
+	@Override
+	public Boolean setExitDataEstacionamientoPensionWithToken(int token) {
+		Estacionamiento est = estDao.findEstacionamientoByTokenIngreso(token);
+		Usuario usuario = usrDao.findUsuarioByToken(token);
+
+		if (est == null || usuario == null) {
+			return false;
+		}
+
+		if (usuario.getEdoUsu() != 1L) {
+			return false;
+		}
+
+		LocalDateTime fechaIngreso = est.getIngresoFec();
+		LocalDateTime fechaSalida = LocalDateTime.now();
+		Double total = calculateCosto(fechaIngreso, fechaSalida);
+		total = total * 0.7;
+
+		est.setSalidaFec(fechaSalida);
+		est.setTotal(total);
+		est.setEdoPago(true);
+
+		estDao.CreateOrUpdateEstacionamiento(est);
+
+		return true;
+	}
+	// Se mantiene el borrado igual que el de Estacionamiento Normal
 
 	@Override
 	public LocalDateTime getEstacionamientobyToken(int token) {
@@ -178,53 +215,6 @@ public class EstacionamientoServiceImp implements EstacionamientoService {
 
 		LocalDateTime Ingreso = est.getIngresoFec();
 		return Ingreso;
-	}
-
-	@Override
-	public PagoDto getpago(int token) {
-		Estacionamiento est = estDao.findEstacionamientoByTokenIngreso(token);
-		Const costoPH = new Const();
-		PagoDto pago = new PagoDto();
-
-		/* recupera la entrada y establece la salida del usuario */
-		LocalDateTime ingreso = est.getIngresoFec();
-		LocalDateTime salida = LocalDateTime.now();
-		est.setSalidaFec(salida);
-
-		/* calcula el costo por uso */
-		Duration duration = Duration.between(ingreso, salida);
-		long hrs = duration.toHours();
-		long sec = duration.toSeconds();
-
-		double totalHoras;
-
-		Usuario usuario = usrDao.findUsuarioByToken(token);
-		if (usuario.getEdoUsu() == 1L) {
-			if (sec >= 0 && sec < 3600) {
-				// Si los minutos son múltiplos de 60 o hay segundos, redondear hacia arriba
-				totalHoras = Math.ceil((double) sec / 3600) * (costoPH.costoPorHora - 17);
-			} else {
-				// Si los minutos son exactos, simplemente usar las horas
-				totalHoras = hrs * (costoPH.costoPorHora - 17);
-			}
-			pago.setSubTotal(totalHoras);
-			pago.setTotal(Math.ceil(totalHoras * 1.16));
-		} else {
-			if (sec >= 0 && sec < 3600) {
-				// Si los minutos son múltiplos de 60 o hay segundos, redondear hacia arriba
-				totalHoras = Math.ceil((double) sec / 3600) * costoPH.costoPorHora;
-			} else {
-				// Si los minutos son exactos, simplemente usar las horas
-				totalHoras = hrs * costoPH.costoPorHora;
-			}
-			pago.setSubTotal(totalHoras);
-			pago.setTotal(Math.ceil(totalHoras * 1.16));
-		}
-		pago.setFechaEntradaString(ingreso.toString());
-		pago.setFechaSalida(salida.toString());
-		pago.setFechaCompleta(salida);
-
-		return pago;
 	}
 
 	@Override
@@ -241,7 +231,7 @@ public class EstacionamientoServiceImp implements EstacionamientoService {
 	}
 
 	@Override
-	public boolean changeToHistorial(int token, double timepoUso,double total) {
+	public boolean changeToHistorial(int token, double timepoUso, double total) {
 		Estacionamiento estacionamiento = estDao.findEstacionamientoByTokenIngreso(token);
 
 		if (estacionamiento != null) {
@@ -268,11 +258,6 @@ public class EstacionamientoServiceImp implements EstacionamientoService {
 		estacionamiento.setTotal(total);
 		estDao.CreateOrUpdateEstacionamiento(estacionamiento);
 		return estacionamiento;
-	}
-
-	@Override
-	public void deleteEstacionamientoByToken(int token) {
-		estDao.deleteEstacionamientoByToken(token);
 	}
 
 }

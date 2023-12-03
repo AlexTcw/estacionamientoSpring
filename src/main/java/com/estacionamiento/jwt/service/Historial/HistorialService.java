@@ -9,4 +9,6 @@ import com.estacionamiento.jwt.model.Historial;
 @Service
 public interface HistorialService {
     List<Historial> findAllHistorials();
+
+    public Boolean setEstacionamientoDataIntoHistorial(int token);
 }

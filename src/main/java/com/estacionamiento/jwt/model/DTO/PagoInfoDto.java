@@ -2,30 +2,14 @@ package com.estacionamiento.jwt.model.DTO;
 
 import java.time.LocalDateTime;
 
-public class PagoDto {
+public class PagoInfoDto {
 
 	Double subTotal;
 	Double total;
-	String fechaEntradaString;
+	String fechaEntrada;
 	String fechaSalida;
 	String fecha;
 	LocalDateTime fechaCompleta;
-
-	public LocalDateTime getFechaCompleta() {
-		return fechaCompleta;
-	}
-
-	public void setFechaCompleta(LocalDateTime fechaCompleta) {
-		this.fechaCompleta = fechaCompleta;
-	}
-
-	public String getFecha() {
-		return fecha;
-	}
-
-	public void setFecha(String fecha) {
-		this.fecha = fecha;
-	}
 
 	public Double getSubTotal() {
 		return subTotal;
@@ -43,12 +27,12 @@ public class PagoDto {
 		this.total = total;
 	}
 
-	public String getFechaEntradaString() {
-		return fechaEntradaString;
+	public String getFechaEntrada() {
+		return fechaEntrada;
 	}
 
-	public void setFechaEntradaString(String fechaEntradaString) {
-		this.fechaEntradaString = fechaEntradaString;
+	public void setFechaEntrada(String fechaEntrada) {
+		this.fechaEntrada = fechaEntrada;
 	}
 
 	public String getFechaSalida() {
@@ -57,6 +41,22 @@ public class PagoDto {
 
 	public void setFechaSalida(String fechaSalida) {
 		this.fechaSalida = fechaSalida;
+	}
+
+	public String getFecha() {
+		return fecha;
+	}
+
+	public void setFecha(String fecha) {
+		this.fecha = fecha;
+	}
+
+	public LocalDateTime getFechaCompleta() {
+		return fechaCompleta;
+	}
+
+	public void setFechaCompleta(LocalDateTime fechaCompleta) {
+		this.fechaCompleta = fechaCompleta;
 	}
 
 }

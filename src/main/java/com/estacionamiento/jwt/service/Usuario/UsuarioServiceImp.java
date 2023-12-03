@@ -21,6 +21,47 @@ public class UsuarioServiceImp implements UsuarioService {
 	@Autowired
 	EstacionamientoDao estDao;
 
+	/*
+	 * 0=generico
+	 * 1=pensionado
+	 * 2= admin
+	 */
+
+	// Pensionado Path
+	// crear un nuevo Usuario Pensionado con token inmutable
+	@Override
+	public Usuario createNewPensionUsuario(String correo, String pswd, int token, String placa, String nombre) {
+		Usuario usuario = new Usuario(null, 1L, correo, pswd, Collections.singletonList(placa), token, nombre);
+		try {
+			usudao.createOrUpdateUsuario(usuario);
+		} catch (Exception e) {
+			// Manejar la excepción apropiadamente
+			e.printStackTrace(); // o loguear el error
+			return null; // O manejar el error de alguna otra manera
+		}
+
+		return usuario;
+	}
+
+	// Recuperamos los datos importantes del usuario
+	@Override
+	public UsrInfoDto getUsrInfo(int token) {
+
+		UsrInfoDto usrInfoDto = new UsrInfoDto();
+		Usuario usuario = usudao.findUsuarioByToken(token);
+		if (usuario != null) {
+			List<String> placas = usuario.getPlacas();
+			usrInfoDto.setNombreUsu(usuario.getNomUsu());
+			usrInfoDto.setCorreoUsu(usuario.getCorreo());
+			usrInfoDto.setPlacas(placas);
+			usrInfoDto.setToken(token);
+
+			return usrInfoDto;
+
+		}
+		return null;
+	}
+
 	@Override
 	public Boolean findUsuarioByCorreoUsu(String correo) {
 		Usuario usuario = usudao.findUsuarioByCorreo(correo);
@@ -97,28 +138,6 @@ public class UsuarioServiceImp implements UsuarioService {
 	}
 
 	@Override
-	public UsrInfoDto getUsrInfo(int token) {
-
-		UsrInfoDto usrInfoDto = new UsrInfoDto();
-		Usuario usuario = usudao.findUsuarioByToken(token);
-		if (usuario != null) {
-			List<String> placas = usuario.getPlacas();
-			usrInfoDto.setNombreUsu(usuario.getNomUsu());
-			usrInfoDto.setCorreoUsu(usuario.getCorreo());
-			usrInfoDto.setPlacas(placas);
-
-			return usrInfoDto;
-
-		} else {
-			usrInfoDto.setNombreUsu("No hay usuarios ");
-			usrInfoDto.setCorreoUsu("");
-			usrInfoDto.setPlacas(Collections.emptyList());
-		}
-
-		return null;
-	}
-
-	@Override
 	public void deleteUsuarioByCveUsu(int token) {
 
 		List<Usuario> usuariosToDelete = usudao.findUsuariosByToken(token);
@@ -153,7 +172,7 @@ public class UsuarioServiceImp implements UsuarioService {
 		usuario.setNomUsu(nombre);
 
 		usudao.createOrUpdateUsuario(usuario);
-		
+
 		return true;
 	}
 }
