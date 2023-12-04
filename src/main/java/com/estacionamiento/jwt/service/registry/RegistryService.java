@@ -17,5 +17,8 @@ public interface RegistryService {
 
 	Boolean setRegistryEdo(int token, int edo);
 
+	public Boolean setRegistry4Pension(int token);
+
+	public Boolean setRegistry5Admin(int token);
 
 }

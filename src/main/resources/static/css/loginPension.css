@@ -2,7 +2,7 @@ body {
     font-family: 'Arial', sans-serif;
     font-stretch: extra-condensed;
     color: #fff;
-    background-image: url("/css/bienvenida.jpg");
+    background-image: url("/images/bienvenida.jpg");
     background-size: cover;
     display: flex;
     align-items: center;
@@ -15,11 +15,13 @@ body {
     display: flex;
 }
 
-.signup, label {
+.signup,
+label {
     font-size: 20px;
 }
 
-.signup, h1 {
+.signup,
+h1 {
     font-size: 20px;
 }
 
@@ -30,11 +32,12 @@ body {
     align-items: center;
     justify-content: center;
     text-align: left;
-    background-color: rgba(219, 133, 52,0.7);
+    background-color: rgba(219, 133, 52, 0.7);
     border-radius: 15px;
     width: 40rem;
     height: 27rem;
-    margin: 0 10px; /* Ajusta el espacio entre los elementos según tus necesidades */
+    margin: 0 10px;
+    /* Ajusta el espacio entre los elementos según tus necesidades */
     margin-top: 20px;
     padding: 5px;
     padding-top: 30px;
@@ -44,16 +47,17 @@ body {
     display: flex;
     flex-direction: column;
     text-align: left;
-    align-items: center;    
-    background-color: rgba(219, 133, 52,0.7);
+    align-items: center;
+    background-color: rgba(219, 133, 52, 0.7);
     width: 40rem;
     height: 34rem;
-    margin: 0 10px 0 10px; /* Ajusta el espacio entre los elementos según tus necesidades */
+    margin: 0 10px 0 10px;
+    /* Ajusta el espacio entre los elementos según tus necesidades */
     padding: 20px;
     font-size: 40px;
 }
 
-.tab-content input{
+.tab-content input {
     width: 35rem;
     height: 25px;
 }
@@ -74,13 +78,13 @@ button {
     margin-top: 20px;
     margin-bottom: 40px;
     font-size: 18px;
-  }
+}
 
-img{
+img {
     margin-top: 20px;
     width: 200px;
 }
 
-#costo{
+#costo {
     font-size: 40px;
 }

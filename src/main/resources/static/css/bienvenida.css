@@ -3,7 +3,7 @@ body {
   font-family: 'Arial', sans-serif;
   font-stretch: extra-condensed;
   color: #fff;
-  background-image: url("/css/bienvenida.jpg");
+  background-image: url("/images/bienvenida.jpg");
   background-size: cover;
   /*background: #111;*/
 }

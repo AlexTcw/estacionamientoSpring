@@ -8,6 +8,8 @@ import com.estacionamiento.jwt.model.Usuario;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
+	boolean existsByCorreo(String correo);
+
 	boolean existsUsuarioByTokenEst(int token);
 
 	Usuario findUsuarioByCveUsu(Long cveUsu);

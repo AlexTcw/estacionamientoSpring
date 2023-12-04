@@ -1,5 +1,5 @@
 body {
-    background-image: url("/css/bienvenida.jpg");
+    background-image: url("/images/bienvenida.jpg");
     background-size: cover;
     font-family: 'Arial', sans-serif;
     font-stretch: extra-condensed;
@@ -57,4 +57,12 @@ button {
 button:hover {
     background-color: #fff;
     color: #111;
+}
+
+h3 span {
+    text-align: right;
+    display: inline-block;
+    /* Añade display: inline-block para evitar que ocupe toda la línea */
+    width: 100%;
+    /* Ajusta el ancho del span al 100% para ocupar todo el espacio disponible */
 }

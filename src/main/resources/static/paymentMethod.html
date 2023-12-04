@@ -15,19 +15,21 @@
         <a href="" id="continueButton">continuar</a>
     </div>
     <div class="paymentContainer">
-        <h3>FECHA DE ENTRADA</h3>
-        <p id="fEntrada"></p>
-        <h3>FECHA DE SALIDA</h3>
-        <p id="fsalida"></p>
-        <h3>Hora DE ENTRADA</h3>
-        <p id="hEntrada"></p><br><br>
-        <h3>SUBTOTAL</h3>
-        <p id="subTotal"></p>
-        <h3>TOTAL</h3>
-        <p id="total"></p>
+        <h3>FECHA DE ENTRADA <span id="fEntrada"></span></h3>
+        <h3>FECHA DE SALIDA <span id="fsalida"></span></h3>
+        <h3>Hora DE ENTRADA <span id="hEntrada"></span></h3>
+        <h3>SUBTOTAL <span id="subTotal"></span></h3>
+        <h3>TOTAL <span id="total"></span></h3><br>
+
+        <h3>Requiere factura?</h3>
+        <label>
+            <input type="checkbox" id="requiereFactura" onchange="toggleInput()">
+            Sí
+        </label>
         <button id="paymentbutton">Pagar</button>
         <button id="cancelbutton">Cancelar</button>
     </div>
 </body>
+
 
 </html>

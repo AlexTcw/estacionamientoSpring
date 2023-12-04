@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,10 +57,15 @@ public class EstacionamientoServiceImp implements EstacionamientoService {
 		Const costoPorHora = new Const();
 		Duration duration = Duration.between(ingreso, salida);
 
-		long horas = duration.toHours();
-		long segundos = duration.toSeconds();
+		long segundosTotales = duration.getSeconds();
+		long horas = duration.toHoursPart();
+		long minutos = duration.toMinutesPart();
+		long segundosRestantes = duration.toSecondsPart();
 
-		if (segundos >= 0 && segundos < SECONDS_IN_HOUR) {
+		System.out.println("ingreso: " + ingreso + " salida: " + salida);
+		System.out.println(horas + " horas, " + minutos + " minutos, " + segundosRestantes + " segundos");
+
+		if (segundosTotales >= 0 && segundosTotales < SECONDS_IN_HOUR) {
 			// Si la duración es menor a una hora, calcular el costo por minuto
 			return costoPorHora.costoPorHora;
 		} else {
@@ -132,13 +138,16 @@ public class EstacionamientoServiceImp implements EstacionamientoService {
 			total *= 0.7;
 		}
 
+		DateTimeFormatter formatterHora = DateTimeFormatter.ofPattern("HH:mm");
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/y");
 
+		String horaEntradaFormat = horaEntrada.format(formatterHora);
+
 		pagoInfo.setFecha(ingreso.format(formatter));
-		pagoInfo.setFechaEntrada(horaEntrada.toString());
+		pagoInfo.setFechaEntrada(horaEntradaFormat);
 		pagoInfo.setFechaCompleta(ingreso);
-		pagoInfo.setTotal(total);
-		pagoInfo.setSubTotal(total * 0.84);
+		pagoInfo.setTotal(Double.parseDouble(String.format("%.2f", total)));
+		pagoInfo.setSubTotal(Double.parseDouble(String.format("%.2f", total * 0.84)));
 
 		return pagoInfo;
 	}
@@ -209,48 +218,14 @@ public class EstacionamientoServiceImp implements EstacionamientoService {
 	}
 	// Se mantiene el borrado igual que el de Estacionamiento Normal
 
+	// Admin capabilities
+	// recuperar todos los estacionamientos
 	@Override
-	public LocalDateTime getEstacionamientobyToken(int token) {
-		Estacionamiento est = estDao.findEstacionamientoByTokenIngreso(token);
-
-		LocalDateTime Ingreso = est.getIngresoFec();
-		return Ingreso;
+	public List<Estacionamiento> getAllEstacionamientoTbl() {
+		return estDao.findAllEstacionamientos();
 	}
 
-	@Override
-	public boolean cambiaEdoPago(int token, long edoUsu) {
-		Estacionamiento est = estDao.findEstacionamientoByTokenIngreso(token);
-
-		if (edoUsu != 1) {
-			return false;
-		}
-
-		est.setEdoPago(true);
-		estDao.CreateOrUpdateEstacionamiento(est);
-		return true;
-	}
-
-	@Override
-	public boolean changeToHistorial(int token, double timepoUso, double total) {
-		Estacionamiento estacionamiento = estDao.findEstacionamientoByTokenIngreso(token);
-
-		if (estacionamiento != null) {
-			Historial historial = new Historial();
-			historial.setCveEst(estacionamiento.getCveEst());
-			historial.setIngresoFec(estacionamiento.getIngresoFec());
-			historial.setSalidaFec(estacionamiento.getSalidaFec());
-
-			historial.setTiempoDeUso(timepoUso);
-
-			historial.setTotal(total);
-
-			hstDao.saveOrUpdateHistorial(historial);
-			return true;
-		} else {
-			return false; // O manejar de otra manera si el estacionamiento no existe
-		}
-	}
-
+	// actualizar estacionamiento
 	@Override
 	public Estacionamiento updEstacionamiento(double total, LocalDateTime salida, int token) {
 		Estacionamiento estacionamiento = estDao.findEstacionamientoByTokenIngreso(token);
@@ -258,6 +233,11 @@ public class EstacionamientoServiceImp implements EstacionamientoService {
 		estacionamiento.setTotal(total);
 		estDao.CreateOrUpdateEstacionamiento(estacionamiento);
 		return estacionamiento;
+	}
+
+	@Override
+	public void deleteEstacionamientoByCve(Long cve) {
+		estDao.deleteEstacionamientoById(cve);
 	}
 
 }

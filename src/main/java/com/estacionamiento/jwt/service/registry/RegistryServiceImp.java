@@ -49,6 +49,24 @@ public class RegistryServiceImp implements RegistryService {
 	}
 
 	@Override
+	public Boolean setRegistry4Pension(int token) {
+		RegistrosHuellas registro = new RegistrosHuellas();
+		registro.setEdoRegistro(4);
+		registro.setToken(token);
+		registryDao.createNewEdo(registro);
+		return true;
+	}
+
+	@Override
+	public Boolean setRegistry5Admin(int token) {
+		RegistrosHuellas registro = new RegistrosHuellas();
+		registro.setEdoRegistro(5);
+		registro.setToken(token);
+		registryDao.createNewEdo(registro);
+		return true;
+	}
+
+	@Override
 	public Boolean setRegistryEdo(int token, int edo) {
 		RegistrosHuellas registro = new RegistrosHuellas();
 		registro.setEdoRegistro(edo);

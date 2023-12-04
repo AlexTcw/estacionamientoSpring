@@ -1,100 +1,88 @@
-function getLastToken() {
+document.addEventListener("DOMContentLoaded", function () {
   var requestOptions = {
     method: 'GET',
     redirect: 'follow'
   };
 
-  // Devuelve la promesa de la llamada fetch
-  return fetch("http://localhost:8080/lastId", requestOptions)
-    .then(response => response.text())
-    .catch(error => console.log('error', error));
-}
+  fetch("http://localhost:8080/getFechaEstByToken", requestOptions)
+    .then(response => response.json())
+    .then(data => {
+      // Update the HTML elements with the retrieved data
+      document.getElementById("fechaDeEntrada").textContent = data.fecha;
+      document.getElementById("horaDeEntrada").textContent = data.fechaEntrada;
+      document.getElementById("subtotal").textContent = data.subTotal + " MNX";
+      document.getElementById("total").textContent = data.total + " MNX";
 
-function getHoraDeEntrada(token) {
-  var requestOptions = {
-    method: 'GET',
-    redirect: 'follow'
-  };
+      // Convierte la fechaCompleta a un objeto Date
+      const fechaCompletaDate = new Date(data.fechaCompleta);
 
-  // Usamos el token en la URL
-  fetch(`http://localhost:8080/ingreso?token=${token}`, requestOptions)
-    .then(response => response.json())  // Parsea la respuesta como JSON
-    .then(result => {
-      // Muestra la fecha y hora de entrada
-      document.getElementById("fechaDeEntrada").textContent = result.fecha;
-      document.getElementById("horaDeEntrada").textContent = result.hora;
+      // Calcula la diferencia con la fecha y hora actual
+      const now = new Date();
+      const diff = now.getTime() - fechaCompletaDate.getTime();
 
-      // Inicia el cronómetro
-      startCronometro(result.hora);
+      // Para una mejor visualización, puedes convertir la diferencia a otros formatos:
+
+      // Días, horas, minutos y segundos
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor(diff / (1000 * 60 * 60)) % 24;
+      const minutes = Math.floor(diff / (1000 * 60)) % 60;
+      const seconds = Math.floor(diff / 1000) % 60;
+
+      // Crea un cronómetro de tiempo transcurrido y lo muestra en el elemento HTML
+      cronometro(days, hours, minutes, seconds);
+
+      // Agrega una nueva solicitud GET
+      var requestOptionsPlacas = {
+        method: 'GET',
+        redirect: 'follow'
+      };
+
+      fetch("http://localhost:8080/getUsrPensionTblPlacasByToken", requestOptionsPlacas)
+        .then(response => response.text())
+        .then(result => {
+          // Procesa el resultado para quitar los corchetes
+          const processedResult = result.replace(/\[|\]/g, '');
+
+          // Muestra el resultado procesado en el elemento con el ID "bodyPLacas"
+          document.getElementById("bodyPLacas").textContent = processedResult;
+        })
+        .catch(error => console.log('error', error));
+
     })
     .catch(error => console.log('error', error));
-}
-
-document.getElementById("enviarButton").addEventListener("click", function () {
-  getLastToken().then(token => {
-    updatePlacas(token);
-  });
 });
 
-// La función updatePlacas permanece igual
-function updatePlacas(token) {
-  var placa = document.getElementById("placaInput").value;
 
-  var requestOptions = {
-    method: 'POST',
-    redirect: 'follow'
-  };
 
-  fetch(`http://localhost:8080/updateUsuTable?token=${token}&placa=${placa}`, requestOptions)
-    .then(response => response.text())
-    .then(result => {
-      console.log(result);
-      // Recargar la página después de actualizar las placas
-      location.reload();
-    })
-    .catch(error => console.log('error', error));
-}
+function cronometro(initialDays, initialHours, initialMinutes, initialSeconds) {
+  // Inicializa las variables
+  let start = new Date().getTime();
 
-function getDataUsr(token) {
+  // Crea un temporizador que se ejecute cada segundo
+  setInterval(() => {
+    // Calcula el tiempo transcurrido desde la última petición
+    let now = new Date();
+    let diff = now.getTime() - start;
 
-  var requestOptions = {
-    method: 'GET',
-    redirect: 'follow'
-  };
+    // Calcula los días, horas, minutos y segundos transcurridos
+    let elapsedDays = Math.floor(diff / (1000 * 60 * 60 * 24)) + initialDays;
+    let elapsedHours = Math.floor(diff / (1000 * 60 * 60)) % 24 + initialHours;
+    let elapsedMinutes = Math.floor(diff / (1000 * 60)) % 60 + initialMinutes;
+    let elapsedSeconds = Math.floor(diff / 1000) % 60 + initialSeconds;
 
-  fetch(`http://localhost:8080/getUsrInfo?token=${token}`, requestOptions)
-    .then(response => response.json())
-    .then(result => {
-      console.log(result);
+    // Ajusta los minutos y las horas si exceden 60
+    if (elapsedSeconds >= 60) {
+      elapsedMinutes += Math.floor(elapsedSeconds / 60);
+      elapsedSeconds %= 60;
+    }
+    if (elapsedMinutes >= 60) {
+      elapsedHours += Math.floor(elapsedMinutes / 60);
+      elapsedMinutes %= 60;
+    }
 
-      document.getElementById("Usuario").textContent = result.nombreUsu;
-
-      // Accede al tbody de la tabla donde se mostrarán las placas
-      var tbody = document.getElementById("bodyPLacas");
-
-      // Elimina cualquier contenido existente en el tbody
-      tbody.innerHTML = "";
-
-      // Verifica si hay placas en el resultado
-      if (result.placas && result.placas.length > 0) {
-        // Itera sobre las placas y crea filas para cada una
-        result.placas.forEach(placa => {
-          var row = document.createElement("tr");
-          var cell = document.createElement("td");
-          cell.textContent = placa;
-          row.appendChild(cell);
-          tbody.appendChild(row);
-        });
-      } else {
-        // Si no hay placas, puedes agregar un mensaje o realizar alguna acción
-        var row = document.createElement("tr");
-        var cell = document.createElement("td");
-        cell.textContent = "No hay placas asociadas.";
-        row.appendChild(cell);
-        tbody.appendChild(row);
-      }
-    })
-    .catch(error => console.log('error', error));
+    // Actualiza el tiempo transcurrido en el elemento HTML
+    document.getElementById("tiempoTranscurrido").textContent = `${elapsedHours}h:${elapsedMinutes}m:${elapsedSeconds}s`;
+  }, 1000);
 }
 
 function mostrarNuevaPlaca() {
@@ -105,64 +93,28 @@ function mostrarNuevaPlaca() {
 const addButton = document.getElementById("addButton");
 addButton.addEventListener("click", mostrarNuevaPlaca);
 
+document.getElementById("enviarButton").addEventListener("click", function () {
+  // Obtener el valor del input con id "placaInput"
+  var placa = document.getElementById("placaInput").value;
 
+  // Llamar a la función con el valor de placa como parámetro
+  enviarPlaca(placa);
+});
 
-
-function startCronometro(horaDeEntrada) {
-  // Obtén la hora actual
-  var horaActual = new Date();
-
-  // Parsea la hora de entrada a un objeto Date
-  var horaEntrada = new Date(`${horaActual.toDateString()} ${horaDeEntrada}`);
-
-  // Calcula la diferencia en milisegundos
-  var diferencia = horaActual - horaEntrada;
-
-  // Convierte la diferencia a segundos
-  var segundosTranscurridos = Math.floor(diferencia / 1000);
-
-  // Calcula días, horas, minutos y segundos
-  var dias = Math.floor(segundosTranscurridos / (24 * 3600));
-  var horas = Math.floor((segundosTranscurridos % (24 * 3600)) / 3600);
-  var minutos = Math.floor((segundosTranscurridos % 3600) / 60);
-  var segundos = segundosTranscurridos % 60;
-
-  // Formatea la cadena en el formato deseado
-  var tiempoFormateado = `${dias}d ${horas}h ${minutos}m ${segundos}s`;
-
-  // Actualiza el contenido del elemento <p> con el tiempo transcurrido
-  document.getElementById("tiempoTranscurrido").textContent = `Tiempo transcurrido: ${tiempoFormateado}`;
-
-  // Actualiza cada segundo
-  setInterval(function () {
-    segundosTranscurridos++;
-    dias = Math.floor(segundosTranscurridos / (24 * 3600));
-    horas = Math.floor((segundosTranscurridos % (24 * 3600)) / 3600);
-    minutos = Math.floor((segundosTranscurridos % 3600) / 60);
-    segundos = segundosTranscurridos % 60;
-    tiempoFormateado = `${dias}d ${horas}h ${minutos}m ${segundos}s`;
-    document.getElementById("tiempoTranscurrido").textContent = `${tiempoFormateado}`;
-  }, 1000);
-}
-
-function tryPay(token) {
+function enviarPlaca(placa) {
   var requestOptions = {
-    method: 'GET',
+    method: 'POST',
     redirect: 'follow'
   };
 
-  fetch(`http://localhost:8080/try-pay?token=${token}`, requestOptions)
-    .then(response => response.json())
-    .then(result => {
-      document.getElementById("subtotal").textContent = "$ " + result.subTotal + " MNX";
-      document.getElementById("total").textContent = "$ " + result.total + " MNX";
-    })
+  // Concatenar el valor de placa a la URL
+  var url = "http://localhost:8080/updateUsuTablePlacas?placa=" + placa;
+
+  fetch(url, requestOptions)
+    .then(response => response.text())
+    .then(result => window.location.reload())
     .catch(error => console.log('error', error));
 }
-// Llamada a las funciones
-getLastToken().then(token => getHoraDeEntrada(token));
-getLastToken().then(token => getDataUsr(token));
-getLastToken().then(token => tryPay(token));
 
 function redirectToIndex() {
   var requestOptions = {
@@ -178,12 +130,6 @@ function redirectToIndex() {
     .catch(error => console.log('error', error));
 }
 
-document.getElementById('comeBackButton').addEventListener('click', function (event) {
-
-  event.preventDefault();
-
-
+document.getElementById('comeBackButton').addEventListener('click', function () {
   redirectToIndex();
-
 });
-

@@ -4,8 +4,11 @@ import java.util.ArrayList;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,8 +43,9 @@ public class UsuarioController {
 
 	@PostMapping("/createUsuPension")
 	public ResponseEntity<String> createNewPensionUserWithToken(@RequestParam String correo, @RequestParam String pswd,
-			@RequestParam int token, @RequestParam String placa, @RequestParam String nombre) {
+			@RequestParam String placa, @RequestParam String nombre) {
 
+		int token = registryService.getLastTokenRegistry();
 		Boolean existPensionado = usuarioDao.existUsuarioByToken(token);
 		Boolean existToken = estacionamientoService.existToken(token);
 
@@ -53,7 +57,6 @@ public class UsuarioController {
 		if (existPensionado == false) {
 			Usuario usuario = usuarioService.createNewPensionUsuario(correo, pswd, token, placa, nombre);
 			if (usuario != null) {
-				registryService.setRegistry2proccess();
 				return ResponseEntity.ok("Usuario creado para el token: " + token);
 			}
 			return ResponseEntity.status(HttpStatus.CONFLICT)
@@ -82,88 +85,122 @@ public class UsuarioController {
 		}
 	}
 
-	@PostMapping("/createUsuario")
-	public ResponseEntity<String> createUsu(@RequestParam String correo, @RequestParam String pswd,
-			@RequestParam int token, @RequestParam String placa, @RequestParam String nombre) {
-		try {
-			if (correo.equals("generico@usuario")) {
-				return ResponseEntity.badRequest().body("Usuario no válido");
-			}
-			Boolean findUsr = usuarioService.findUsuarioByCorreoUsu(correo);
-			if (findUsr == false) {
-				Long edoUsu = 1L;
-				usuarioService.createNewUsu(correo, pswd, token, placa, nombre, edoUsu);
-
-				List<Usuario> usuariosToDelete = usuarioDao.findUsuariosByToken(token);
-
-				for (Usuario usuario : usuariosToDelete) {
-					if (usuario.getEdoUsu() == 0L) {
-						usuarioDao.deleteUsuarioByCveUsu(usuario.getCveUsu());
-					}
-				}
-
-				return ResponseEntity.ok("usuario creado, redirigiendo");
-			}
-			return ResponseEntity.badRequest().body("Usuario no válido");
-		} catch (NonUniqueResultException e) {
-			return ResponseEntity.badRequest().body("Usuario no válido");
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Usuario no válido");
-
+	// estado para validar al pensionado (no sirve para admin ya que el token de
+	// admin no es unico)
+	@GetMapping("/getEdoUsuForPension")
+	public ResponseEntity<Object> getEdoUsuForPension(@RequestParam("token") int token) {
+		Long edoUsu = usuarioService.getEdoUsuarioByTokenForPension(token);
+		if (edoUsu == null) {
+			return ResponseEntity.status(HttpStatus.CONFLICT)
+					.body("El usuario con token " + token + " no es pensionado o no existe");
 		}
+		if (edoUsu == 1L) {
+			return ResponseEntity.ok(edoUsu);
+		}
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("no existe el token: " + token);
+
 	}
 
-	@PostMapping("/createUsuarioAdmin")
-	public ResponseEntity<String> createUsuAdmin(@RequestParam String correo, @RequestParam String pswd,
-			@RequestParam int token, @RequestParam String nombre) {
-		try {
-			if (correo.equals("generico@usuario")) {
-				return ResponseEntity.badRequest().body("Usuario no válido");
-			}
-			Boolean findUsr = usuarioService.findUsuarioByCorreoUsu(correo);
-			if (findUsr == false) {
-				Long edoUsu = 2L;
-				String placa = "";
-				usuarioService.createNewUsu(correo, pswd, token, placa, nombre, edoUsu);
+	// For login pensionado solo si no tiene acceso a la huella o simplemente no
+	// quiere
+	@GetMapping("/loginUsuForPensionByCorreoAndPassword")
+	public ResponseEntity<Object> validateUsuarioPension(
+			@RequestParam("correo") String correo,
+			@RequestParam("contraseña") String contraseña) {
 
-				List<Usuario> usuariosToDelete = usuarioDao.findUsuariosByToken(token);
+		Boolean isPensionado = usuarioService.validateUsuarioPension(correo, contraseña);
 
-				for (Usuario usuario : usuariosToDelete) {
-					if (usuario.getEdoUsu() == 0L) {
-						usuarioDao.deleteUsuarioByCveUsu(usuario.getCveUsu());
-					}
-				}
-
-				return ResponseEntity.ok("usuario creado");
-			}
-			return ResponseEntity.badRequest().body("Usuario no válido");
-		} catch (NonUniqueResultException e) {
-			return ResponseEntity.badRequest().body("Usuario no válido");
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Usuario no válido");
-
+		if (!isPensionado) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body("Correo o contraseña: " + correo + " no existe o es incorrecto para pensionado");
 		}
+
+		return ResponseEntity.ok(isPensionado);
 	}
 
-	@GetMapping("/getUsrTabl")
-	public List<String> getTable(@RequestParam int token) {
+	// Pension Capabilities
+	// recuperar las placas asociadas al token del Pensionado
+	@GetMapping("/getUsrPensionTblPlacasByToken")
+	public ResponseEntity<List<String>> getUsrPensionTblPlacasByToken() {
+		int token = registryService.getLastTokenRegistry();
+		Boolean existToken = usuarioDao.existUsuarioByToken(token);
+
+		if (!existToken) {
+			return ResponseEntity.badRequest().build();
+		}
+
 		List<String> tabla = usuarioService.getTablaPLacas(token);
-		return tabla;
+
+		if (tabla != null && !tabla.isEmpty()) {
+			return ResponseEntity.ok(tabla);
+		}
+
+		return ResponseEntity.noContent().build();
 	}
 
-	@GetMapping("/getUsrInfo")
-	public UsrInfoDto getInfoUsr(@RequestParam int token) {
-		return usuarioService.getUsrInfo(token);
+	@PostMapping("/updateUsuTablePlacas")
+	public void updateTableUsrPlacas(@RequestParam("placa") String placa) {
+		int token = registryService.getLastTokenRegistry();
+		usuarioService.updateTableUsr(token, placa);
 	}
 
-	@GetMapping("/deleteUserByCVE")
+	/* Admin Path */
+	// Primero creamos un usuario admin por consola
+	@PostMapping("/SignUpAdmin")
+	public ResponseEntity<String> createNewUsuarioAdmin(
+			@RequestParam("correo") String correo,
+			@RequestParam("contraseña") String contraseña,
+			@RequestParam("nombre") String nombre) {
+
+		Usuario usuario = usuarioService.createUsuarioAdmin(correo, contraseña, nombre);
+
+		if (usuario != null) {
+			return ResponseEntity.ok("Usuario " + usuario.getCorreo() + " creado");
+		}
+
+		return ResponseEntity.status(HttpStatus.CONFLICT)
+				.body("No se pudo crear el usuario Administrador con esas credenciales");
+	}
+
+	// Segundo valida si existe para acceder a su loby
+	@GetMapping("/loginUsuForAdminByCorreoAndPassword")
+	public ResponseEntity<Object> validateUsuarioAdmin(
+			@RequestParam("correo") String correo,
+			@RequestParam("contraseña") String contraseña) {
+		Boolean isAdmin = usuarioService.existUsuarioAdministador(correo, contraseña);
+		if (!isAdmin) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body("Correo o contraseña: " + correo + " no existe o es incorrecto para pensionado");
+		}
+
+		return ResponseEntity.ok(isAdmin);
+	}
+
+	// Admin capabilities
+	// borrar usuarios
+	@GetMapping("/deleteUserByToken")
 	public void deleteUserByCVE(@RequestParam int token) {
 		usuarioService.deleteUsuarioByCveUsu(token);
 	}
+	// tambien puede recuperar, actualizar y borrar placas
 
-	@PostMapping("/updateUsuTable")
-	public void updateTableUsr(@RequestParam int token, @RequestParam String placa) {
-		usuarioService.updateTableUsr(token, placa);
+	// Recupera todos los usuarios activos
+	@GetMapping("/getAllUsu")
+	public List<Usuario> getAllUsu() {
+		return usuarioService.getAllUsu();
+	}
+
+	// borrar Usuarios
+	@GetMapping("/deleteUsuById")
+	public void deleteUserByCVE(@RequestParam Long cve) {
+		usuarioDao.deleteUsuarioByCveUsu(cve);
+	}
+
+	// actualizar Usuarios
+	@PostMapping("/updateUsu")
+	public boolean updateTableUsr(@RequestParam String correo, @RequestParam String pswd,
+			@RequestParam List<String> placas, @RequestParam String nombre, @RequestParam int token) {
+		return usuarioService.updateTableUsr(correo, pswd, placas, nombre, token);
 	}
 
 	@GetMapping("/getTokenUsr")
@@ -174,20 +211,14 @@ public class UsuarioController {
 		return tokUsu;
 	}
 
-	@GetMapping("/getAllUsu")
-	public List<Usuario> getAllUsu() {
-		return usuarioService.getAllUsu();
-	}
+	@GetMapping("/descargar-csvEst")
+	public ResponseEntity<ByteArrayResource> descargarCsv() {
+		ByteArrayResource resource = usuarioService.createCsvEst();
 
-	@GetMapping("/deleteUsuById")
-	public void deleteUserByCVE(@RequestParam Long cve) {
-		usuarioDao.deleteUsuarioByCveUsu(cve);
+		return ResponseEntity.ok()
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=estacionamientos.csv")
+				.contentType(MediaType.parseMediaType("application/csv"))
+				.contentLength(resource.contentLength())
+				.body(resource);
 	}
-
-	@PostMapping("updateUsu")
-	public boolean updateTableUsr(@RequestParam String correo, @RequestParam String pswd,
-			@RequestParam List<String> placas, @RequestParam String nombre, @RequestParam int token) {
-		return usuarioService.updateTableUsr(correo, pswd, placas, nombre, token);
-	}
-
 }

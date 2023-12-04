@@ -13,28 +13,33 @@ import com.estacionamiento.jwt.service.registry.RegistryService;
 @CrossOrigin(origins = { "*" })
 public class RegistryController {
 
-	@Autowired
-	RegistryService registryService;
-	
-	/*Verificar estado*/
-	@GetMapping("/getedoreg")
-	public int getEdoRegistry() {
-		return registryService.getLastEdoRegistry();
-	}
+    @Autowired
+    RegistryService registryService;
 
-	@GetMapping("/setedoreg")
+    @GetMapping("/getLastToken")
+    public int getLatToken() {
+        return registryService.getLastTokenRegistry();
+    }
+
+    /* Verificar estado */
+    @GetMapping("/getedoreg")
+    public int getEdoRegistry() {
+        return registryService.getLastEdoRegistry();
+    }
+
+    @GetMapping("/setedoreg")
     public ResponseEntity<String> setEdoReg(@RequestParam int token, @RequestParam int edo) {
-        Boolean registrySet = registryService.setRegistryEdo(token,edo);
+        Boolean registrySet = registryService.setRegistryEdo(token, edo);
         if (registrySet != null && registrySet) {
             return ResponseEntity.ok("Registro establecido correctamente");
         } else {
             return ResponseEntity.status(500).body("Error al establecer el registro");
         }
     }
-	
-	@GetMapping("/setedoreg1")
+
+    @GetMapping("/setedoreg1")
     public ResponseEntity<String> setEdoReg1() {
-		int token =0;
+        int token = 0;
         Boolean registrySet = registryService.setRegistry1Enrroll(token);
         if (registrySet != null && registrySet) {
             return ResponseEntity.ok("Registro establecido correctamente");
@@ -42,8 +47,8 @@ public class RegistryController {
             return ResponseEntity.status(500).body("Error al establecer el registro");
         }
     }
-	
-	@GetMapping("/setedoreg2")
+
+    @GetMapping("/setedoreg2")
     public ResponseEntity<String> setEdoReg2() {
         Boolean registrySet = registryService.setRegistry2proccess();
         if (registrySet != null && registrySet) {
@@ -52,10 +57,10 @@ public class RegistryController {
             return ResponseEntity.status(500).body("Error al establecer el registro");
         }
     }
-	
-	@GetMapping("/setedoreg3")
+
+    @GetMapping("/setedoreg3")
     public ResponseEntity<String> setEdoReg3() {
-		int token =0;
+        int token = 0;
         Boolean registrySet = registryService.setRegistry3Exit(token);
         if (registrySet != null && registrySet) {
             return ResponseEntity.ok("Registro establecido correctamente");
@@ -64,5 +69,15 @@ public class RegistryController {
         }
     }
 
-    
+    @GetMapping("/setedoreg4")
+    public ResponseEntity<String> setEdoReg4() {
+        int token = registryService.getLastTokenRegistry();
+        Boolean registrySet = registryService.setRegistry4Pension(token);
+        if (registrySet != null && registrySet) {
+            return ResponseEntity.ok("Registro establecido correctamente");
+        } else {
+            return ResponseEntity.status(500).body("Error al establecer el registro");
+        }
+    }
+
 }

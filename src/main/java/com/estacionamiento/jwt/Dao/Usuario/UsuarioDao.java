@@ -25,4 +25,6 @@ public interface UsuarioDao {
 	public List<Usuario> getAllUsu();
 
 	Boolean existUsuarioByToken(int token);
+
+	public Boolean existUsuarioByCorreo(String correo);
 }

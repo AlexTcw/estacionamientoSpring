@@ -1,12 +1,13 @@
 body {
-    background-image: url("/css/bienvenida.jpg");
+    background-image: url("/images/bienvenida.jpg");
     background-size: cover;
     font-family: 'Arial', sans-serif;
     font-stretch: extra-condensed;
 }
 
 
-.titulo-bienvenida, .titulo-usuario {
+.titulo-bienvenida,
+.titulo-usuario {
     display: inline-block;
     padding-left: 20px;
     font-size: 18px;
@@ -30,7 +31,7 @@ body {
     border-bottom-left-radius: 20px;
     /* Alinea la parte superior de los elementos */
     box-sizing: border-box;
-    background-color: rgba(219, 133, 52,0.7);
+    background-color: rgba(219, 133, 52, 0.7);
     width: 50rem;
     height: 35rem;
     /* Incluyevscode-file://vscode-app/c:/Users/tedga/AppData/Local/Programs/Microsoft%20VS%20Code/resources/app/out/vs/code/electron-sandbox/workbench/workbench.html el padding y border en el ancho */
@@ -143,15 +144,19 @@ a {
     text-decoration: underline;
 }
 
-#addButton{
-    margin-top:  10px;
+#addButton {
+    margin-top: 10px;
 }
 
-#continueButton,#enviarButton,#addButton {
+#continueButton,
+#enviarButton,
+#addButton {
     cursor: pointer;
 }
 
-#continueButton:hover,#addButton:hover, #enviarButton {
+#continueButton:hover,
+#addButton:hover,
+#enviarButton {
     background-color: rgb(85, 100, 114);
     ;
 }
@@ -193,24 +198,31 @@ a {
     color: #111;
     border-radius: 10px;
     padding: 10px;
-    overflow: hidden; /* Oculta el desbordamiento horizontal y vertical */
+    overflow: hidden;
+    /* Oculta el desbordamiento horizontal y vertical */
 }
 
 .placas table {
-    width: 100%; /* Asegura que la tabla ocupe el 100% del ancho del contenedor padre */
-    border-collapse: collapse; /* Fusiona los bordes de las celdas */
+    width: 100%;
+    /* Asegura que la tabla ocupe el 100% del ancho del contenedor padre */
+    border-collapse: collapse;
+    /* Fusiona los bordes de las celdas */
 }
 
 .placas tbody {
     display: block;
-    max-height: 80px; /* Establece la altura máxima para mostrar solo dos filas */
-    overflow-y: auto; /* Permite desplazamiento vertical cuando hay más de dos filas */
+    max-height: 80px;
+    /* Establece la altura máxima para mostrar solo dos filas */
+    overflow-y: auto;
+    /* Permite desplazamiento vertical cuando hay más de dos filas */
 }
 
 .placas td {
     border-radius: 5px;
-    padding: 8px; /* Ajusta el relleno para separar las celdas del borde */
-    width: 14%; /* Divide el ancho en dos columnas */
+    padding: 8px;
+    /* Ajusta el relleno para separar las celdas del borde */
+    width: 14%;
+    /* Divide el ancho en dos columnas */
 }
 
 /* Estilo para las celdas pares */
@@ -227,7 +239,7 @@ a {
 
 
 
-.newPLaca{
+.newPLaca {
     display: none;
     position: absolute;
     margin-left: 45%;
@@ -237,6 +249,5 @@ a {
 
 .newPLaca input {
     border-radius: 10px;
-    padding: 10px;    
+    padding: 10px;
 }
-

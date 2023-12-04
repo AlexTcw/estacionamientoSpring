@@ -65,4 +65,9 @@ public class UsuarioDaoImp implements UsuarioDao {
 		System.out.println(usrRepository.existsUsuarioByTokenEst(token));
 		return usrRepository.existsUsuarioByTokenEst(token);
 	}
+
+	@Override
+	public Boolean existUsuarioByCorreo(String correo) {
+		return usrRepository.existsByCorreo(correo);
+	}
 }

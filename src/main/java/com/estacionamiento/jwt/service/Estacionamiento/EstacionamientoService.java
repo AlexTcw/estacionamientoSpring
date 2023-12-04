@@ -2,6 +2,7 @@ package com.estacionamiento.jwt.service.Estacionamiento;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,10 @@ public interface EstacionamientoService {
 
 	Boolean existToken(int token);
 
+	List<Estacionamiento> getAllEstacionamientoTbl();
+
+	public Estacionamiento getEstacionamientoByToken(int token);
+
 	// ReciboDTO generarReciboSalidaEstacionamiento(int token);
 
 	Boolean createNewEstacionamientoWithToken(int token);
@@ -24,8 +29,6 @@ public interface EstacionamientoService {
 	Boolean setExitDataEstacionamientoWithToken(int token);
 
 	Duration calculateDuration(LocalDateTime ingreso, LocalDateTime salida);
-
-	Estacionamiento getEstacionamientoByToken(int token);
 
 	public Boolean setExitDataEstacionamientoPensionWithToken(int token);
 
@@ -40,15 +43,11 @@ public interface EstacionamientoService {
 
 	Long getLastToken();
 
-	LocalDateTime getEstacionamientobyToken(int token);
-
-	boolean changeToHistorial(int token, double timepoUso, double total);
-
-	boolean cambiaEdoPago(int token, long edoUsu);
-
 	Estacionamiento updEstacionamiento(double total, LocalDateTime salida, int token);
 
 	void deleteEstacionamientoByToken(int token);
+
+	public void deleteEstacionamientoByCve(Long cve);
 
 	// public Boolean createGerericUsuario(Long edoUsu, int token);
 

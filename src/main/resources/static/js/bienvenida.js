@@ -4,58 +4,69 @@ document.addEventListener("DOMContentLoaded", function () {
     redirect: 'follow'
   };
 
-  fetch("http://localhost:8080/ingreso", requestOptions)
-    .then(response => response.json()) // Parse the response as JSON
+  fetch("http://localhost:8080/getFechaEstByToken", requestOptions)
+    .then(response => response.json())
     .then(data => {
       // Update the HTML elements with the retrieved data
-      document.getElementById("fechaDeEntrada").textContent = "Fecha: " + data.fecha;
-      document.getElementById("horaDeEntrada").textContent = "Hora: " + data.hora;
+      document.getElementById("fechaDeEntrada").textContent = data.fecha;
+      document.getElementById("horaDeEntrada").textContent = data.fechaEntrada;
 
-      // Llama a la función startCronometro con la hora de entrada como parámetro
-      startCronometro(data.hora);
+      // Convierte la fechaCompleta a un objeto Date
+      const fechaCompletaDate = new Date(data.fechaCompleta);
+
+      // Calcula la diferencia con la fecha y hora actual
+      const now = new Date();
+      const diff = now.getTime() - fechaCompletaDate.getTime();
+
+      // Para una mejor visualización, puedes convertir la diferencia a otros formatos:
+
+      // Días, horas, minutos y segundos
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor(diff / (1000 * 60 * 60)) % 24;
+      const minutes = Math.floor(diff / (1000 * 60)) % 60;
+      const seconds = Math.floor(diff / 1000) % 60;
+
+      // Crea un cronómetro de tiempo transcurrido y lo muestra en el elemento HTML
+      cronometro(days, hours, minutes, seconds);
+
     })
     .catch(error => console.log('error', error));
 });
 
-function startCronometro(horaDeEntrada) {
-  // Obtén la hora actual
-  var horaActual = new Date();
+function cronometro(initialDays, initialHours, initialMinutes, initialSeconds) {
+  // Inicializa las variables
+  let start = new Date().getTime();
 
-  // Parsea la hora de entrada a un objeto Date
-  var horaEntrada = new Date(`${horaActual.toDateString()} ${horaDeEntrada}`);
+  // Crea un temporizador que se ejecute cada segundo
+  setInterval(() => {
+    // Calcula el tiempo transcurrido desde la última petición
+    let now = new Date();
+    let diff = now.getTime() - start;
 
-  // Calcula la diferencia en milisegundos
-  var diferencia = horaActual - horaEntrada;
+    // Calcula los días, horas, minutos y segundos transcurridos
+    let elapsedDays = Math.floor(diff / (1000 * 60 * 60 * 24)) + initialDays;
+    let elapsedHours = Math.floor(diff / (1000 * 60 * 60)) % 24 + initialHours;
+    let elapsedMinutes = Math.floor(diff / (1000 * 60)) % 60 + initialMinutes;
+    let elapsedSeconds = Math.floor(diff / 1000) % 60 + initialSeconds;
 
-  // Convierte la diferencia a segundos
-  var segundosTranscurridos = Math.floor(diferencia / 1000);
+    // Ajusta los minutos y las horas si exceden 60
+    if (elapsedSeconds >= 60) {
+      elapsedMinutes += Math.floor(elapsedSeconds / 60);
+      elapsedSeconds %= 60;
+    }
+    if (elapsedMinutes >= 60) {
+      elapsedHours += Math.floor(elapsedMinutes / 60);
+      elapsedMinutes %= 60;
+    }
 
-  // Calcula horas, minutos y segundos
-  var horas = Math.floor(segundosTranscurridos / 3600);
-  var minutos = Math.floor((segundosTranscurridos % 3600) / 60);
-  var segundos = segundosTranscurridos % 60;
-
-  // Formatea la cadena en el formato deseado
-  var tiempoFormateado = `${horas}:${minutos}:${segundos}`;
-
-  // Actualiza el contenido del elemento <p> con el tiempo transcurrido
-  document.getElementById("tiempoTranscurrido").textContent = `${tiempoFormateado}`;
-
-  // Actualiza cada segundo
-  setInterval(function () {
-    segundosTranscurridos++;
-    horas = Math.floor(segundosTranscurridos / 3600);
-    minutos = Math.floor((segundosTranscurridos % 3600) / 60);
-    segundos = segundosTranscurridos % 60;
-    tiempoFormateado = `${horas}:${minutos}:${segundos}`;
-    document.getElementById("tiempoTranscurrido").textContent = `${tiempoFormateado}`;
+    // Actualiza el tiempo transcurrido en el elemento HTML
+    document.getElementById("tiempoTranscurrido").textContent = `${elapsedHours}h:${elapsedMinutes}m:${elapsedSeconds}s`;
   }, 1000);
 }
 
 
-/*despues de 1 minuto si no ha pulsado el boton redirigir automaticamente si si lo presiono ir a index
-independientemente se cambiara el edo a 2*/
-
+/*después de 1 minuto si no ha pulsado el botón, redirigir automáticamente; 
+si lo presionó, ir a index, independientemente se cambiará el estado a 2*/
 function redirectToIndex() {
   var requestOptions = {
     method: 'GET',
@@ -70,14 +81,10 @@ function redirectToIndex() {
     .catch(error => console.log('error', error));
 }
 
-// Llama a la función después de 1 minuto (60000 milisegundos)
-setTimeout(redirectToIndex, 60000);
+// Llama a la función después de 1/2 minuto (60000 milisegundos)
+setTimeout(redirectToIndex, 30000);
 
 // Agrega un evento de clic al botón "CONTINUAR"
 document.getElementById('continuarBtn').addEventListener('click', function () {
   redirectToIndex();
 });
-
-
-
-

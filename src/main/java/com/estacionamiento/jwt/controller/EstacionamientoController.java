@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -15,9 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.estacionamiento.jwt.Dao.Estacionamiento.EstacionamientoDao;
 import com.estacionamiento.jwt.model.Estacionamiento;
+import com.estacionamiento.jwt.model.Usuario;
 import com.estacionamiento.jwt.model.DTO.BienvenidaDTO;
 import com.estacionamiento.jwt.model.DTO.PagoInfoDto;
 import com.estacionamiento.jwt.service.Estacionamiento.EstacionamientoService;
+import com.estacionamiento.jwt.service.Usuario.UsuarioService;
 import com.estacionamiento.jwt.service.registry.RegistryService;
 
 @RestController
@@ -32,6 +35,9 @@ public class EstacionamientoController {
 
 	@Autowired
 	EstacionamientoDao estacionamientoDao;
+
+	@Autowired
+	UsuarioService usuarioService;
 
 	// fingerPrintFuction
 	@GetMapping("/generateToken")
@@ -50,12 +56,17 @@ public class EstacionamientoController {
 	public ResponseEntity<String> handleEntryOrExit(@RequestParam("token") int token) {
 		// Verificar si el token existe en el sistema
 		boolean tokenExists = estacionamientoService.existToken(token);
+		Long usuarioedo = usuarioService.getEdoUsuarioByTokenForPension(token);
+
 		if (!tokenExists) {
 			// Entrada: Crear nuevo registro de usuario en el estacionamiento
 			estacionamientoService.createNewEstacionamientoWithToken(token);
 			registryService.setRegistry1Enrroll(token);
 
 			return ResponseEntity.ok("Nuevo registro de estacionamiento para el token: " + token);
+		} else if (usuarioedo != null && usuarioedo == 1L) {
+			registryService.setRegistry4Pension(token);
+			return ResponseEntity.ok("Pensionado Ingresando con token: " + token);
 		} else {
 			// Salida: Actualizar registro de salida para el usuario
 			registryService.setRegistry3Exit(token);
@@ -65,7 +76,8 @@ public class EstacionamientoController {
 
 	// recuperamos la fecha/hora de entrada para el front
 	@GetMapping("/getFechaEstByToken")
-	public ResponseEntity<PagoInfoDto> getFechaEstFront(@RequestParam("token") int token) {
+	public ResponseEntity<PagoInfoDto> getFechaEstFront() {
+		int token = registryService.getLastTokenRegistry();
 		boolean tokenExists = estacionamientoService.existToken(token);
 		PagoInfoDto pagoInfoDto = estacionamientoService.getPagoInfo(token);
 		if (tokenExists || pagoInfoDto != null) {
@@ -123,38 +135,23 @@ public class EstacionamientoController {
 	}
 	// se mantiene el borrado normal y el conseguir la fecha/hora de entrada
 
-	@GetMapping("/lastId")
-	public int getLatToken() {
-		return registryService.getLastTokenRegistry();
-	}
-
-	@GetMapping("/ingreso")
-	public BienvenidaDTO getHoraIngreso() {
-		int token = registryService.getLastTokenRegistry();
-		LocalDateTime horaIngreso = estacionamientoService.getEstacionamientobyToken(token);
-
-		// Formatear la fecha y hora por separado
-		DateTimeFormatter formatterFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		DateTimeFormatter formatterHora = DateTimeFormatter.ofPattern("HH:mm");
-
-		String fechaFormateada = horaIngreso.format(formatterFecha);
-		String horaFormateada = horaIngreso.format(formatterHora);
-
-		BienvenidaDTO bienvenidaDTO = new BienvenidaDTO();
-		bienvenidaDTO.setFecha(fechaFormateada);
-		bienvenidaDTO.setHora(horaFormateada);
-
-		return bienvenidaDTO;
-	}
-
+	// Admin capabilities
+	// recuperar todos los estacionamientos
 	@GetMapping("/getAllEstacionamientos")
 	public List<Estacionamiento> findAllEstacionamientos() {
-		return estacionamientoDao.findAllEstacionamientos();
+		return estacionamientoService.getAllEstacionamientoTbl();
 	}
 
-	@GetMapping("deleteEstacionamientoById")
+	// borrar estacionamientos
+	@GetMapping("/deleteEstacionamientoById")
 	public void deleteEstacionamientoById(@RequestParam Long id) {
-		estacionamientoDao.deleteEstacionamientoById(id);
+		estacionamientoService.deleteEstacionamientoByCve(id);
 	}
 
+	// actualizar estacionamientos
+	@PostMapping("/updateEstacionamiento")
+	public void updateEstacionamiento(@RequestParam("total") Double total,
+			@RequestParam("salida") LocalDateTime salida, int token) {
+		estacionamientoService.updEstacionamiento(total, salida, token);
+	}
 }

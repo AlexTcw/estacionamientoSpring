@@ -61,39 +61,4 @@ public class HistorialController {
                     .body("Error, no existe el token: " + token);
         }
     }
-
-    @GetMapping("/transferHist")
-    public ResponseEntity<String> transferHistorial(@RequestParam int token, @RequestParam Double tiempoUso,
-            @RequestParam Double total) {
-        try {
-            Long edoUsu = 1L;
-            LocalDateTime fechaHoraActuales = LocalDateTime.now();
-
-            Boolean changeEdo = estacionamientoService.cambiaEdoPago(token, edoUsu);
-
-            if (changeEdo) {
-                Estacionamiento estacionamiento = estacionamientoService.updEstacionamiento(token, fechaHoraActuales,
-                        token);
-
-                if (estacionamiento != null) {
-                    Boolean changeToHistorial = estacionamientoService.changeToHistorial(token, tiempoUso, total);
-
-                    if (changeToHistorial) {
-                        estacionamientoService.deleteEstacionamientoByToken(token);
-                        return ResponseEntity.ok("Usuario transferido");
-                    } else {
-                        return ResponseEntity.ok("Estacionamiento no transferido");
-                    }
-                } else {
-                    return ResponseEntity.ok("Estacionamiento no actualizado");
-                }
-            } else {
-                return ResponseEntity.ok("Estado no cambiado");
-            }
-        } catch (Exception e) {
-            // Manejar cualquier excepción aquí, ya sea registrándola o devolviendo una
-            // respuesta específica.
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error en el servidor");
-        }
-    }
 }

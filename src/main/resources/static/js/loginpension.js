@@ -1,15 +1,3 @@
-function getLastToken() {
-  var requestOptions = {
-    method: 'GET',
-    redirect: 'follow'
-  };
-
-  // Devuelve la promesa de la llamada fetch
-  return fetch("http://localhost:8080/lastId", requestOptions)
-    .then(response => response.text())
-    .catch(error => console.log('error', error));
-}
-
 document.addEventListener("DOMContentLoaded", function () {
   var signupButton = document.getElementById("signup-button");
   signupButton.addEventListener("click", validateAndSignup);
@@ -49,29 +37,26 @@ function signupfunction() {
   var email = document.getElementById("emailSignup").value;
   var password = document.getElementById("passwordSignup").value;
   var placa = document.getElementById("placa").value;
-  var nombreUsu = document.getElementById("nombre").value
+  var nombreUsu = document.getElementById("nombre").value;
 
-  // Obtener el último token utilizando la función getLastToken()
-  getLastToken().then(lastToken => {
-    // Construir la URL con los valores de correo, contraseña y último token
-    var url = "http://localhost:8080/createUsuario?correo=" + email + "&pswd=" + password + "&token=" + lastToken + "&placa=" + placa + "&nombre=" + nombreUsu;
+  // Construir la URL con los valores de correo, contraseña y otros datos
+  var url = "http://localhost:8080/createUsuPension?correo=" + email + "&pswd=" + password + "&nombre=" + nombreUsu + "&placa=" + placa;
+  var requestOptions = {
+    method: 'POST',
+    redirect: 'follow'
+  };
 
-    var requestOptions = {
-      method: 'POST',
-      redirect: 'follow'
-    };
-
-    // Realizar la llamada fetch con la URL actualizada
-    fetch(url, requestOptions)
-      .then(response => response.text())
-      .then(result => {
-        // Mostrar la respuesta del servidor en un alert
-        alert(result);
-        console.log(result); // También puedes imprimirlo en la consola si lo deseas
-        window.location.href = 'PensionLoby.html';
-      })
-      .catch(error => console.log('error', error));
-  });
+  // Realizar la llamada fetch con la URL actualizada
+  fetch(url, requestOptions)
+    .then(response => response.text())
+    .then(result => {
+      // Mostrar la respuesta del servidor en un alert
+      alert(result);
+      console.log(result); // También puedes imprimirlo en la consola si lo deseas
+      window.location.href = 'PensionLoby.html';
+    })
+    .catch(error => console.log('error', error));
 }
+
 
 
